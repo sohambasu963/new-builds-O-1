@@ -71,7 +71,7 @@ export default function Overlay({
           <X size={24} />
         </button>
       </div>
-      <div className="px-4 pb-4 bg-black rounded-md border border-[#F2F0E1]">
+      <div className="px-4 pb-4 bg-black rounded-t-[30px] border border-[#F2F0E1]"> {/* Updated this line */}
         <h2 className="text-[40px] mb-2 mt-6 text-[#F2F0E1] font-apple-garamond">{selectedLocation.name}</h2>
         <div className="flex space-x-2 mb-2">th
           <div className="inline-block bg-[#31574A] text-white text-sm px-4 py-1 rounded-full font-apple-garamond uppercase">
@@ -84,7 +84,7 @@ export default function Overlay({
         <textarea
           value={description}
           onChange={handleDescriptionChange}
-          className="w-full h-[363px] p-2 bg-black text-white rounded-md resize-none font-apple-garamond mt-2"
+          className="w-full h-[363px] p-2 bg-black text-white rounded-[20px] resize-none font-instrument-sans mt-2"
           placeholder="Enter description..."
         />
       </div>

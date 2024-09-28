@@ -7,11 +7,25 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/fonts/InstrumentSans-Regular.woff2') format('woff2'),
+       url('/fonts/InstrumentSans-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 .font-apple-garamond {
   font-family: 'Apple Garamond', serif;
+  font-weight: normal;
+}
+
+.font-instrument-sans {
+  font-family: 'Instrument Sans', sans-serif;
   font-weight: normal;
 }
