@@ -17,19 +17,6 @@ export function processSupabaseData(dataArray: any[]): any[] {
       // Randomly select up to 5 results first
       const selectedResults = getRandomItems(data.street_data, 8);
 
-      const sortedResults = selectedResults.sort((a: any, b: any) => {
-        const yearA = Number(a.standardized_year);
-        const yearB = Number(b.standardized_year);
-
-        // Handle cases where year might not be a valid number
-        if (isNaN(yearA) && isNaN(yearB)) return 0;
-        if (isNaN(yearA)) return 1;
-        if (isNaN(yearB)) return -1;
-
-        return yearA - yearB;
-      });
-
-      // Process each selected result
       result.images = selectedResults.map((item) => {
         const url =
           item.primaryMedia && item.primaryMedia.value
@@ -41,6 +28,34 @@ export function processSupabaseData(dataArray: any[]): any[] {
         const description = item.title.value;
 
         return { url, month, year, description };
+      });
+
+      result.images.sort((a, b) => {
+        const yearA = Number(a.year);
+        const yearB = Number(b.year);
+
+        if (yearA !== yearB) {
+          if (isNaN(yearA) && isNaN(yearB)) return 0;
+          if (isNaN(yearA)) return 1;
+          if (isNaN(yearB)) return -1;
+          return yearA - yearB;
+        }
+
+        const monthOrder = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+        return monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month);
       });
     }
 
