@@ -13,9 +13,9 @@ import MarkerShadow from "../../../public/images/marker-shadow.png";
 import Overlay from "../components/overlay";
 import OldOverlay from "../components/old-overlay";
 import { supabase } from "../supabaseClient.js";
-import { processSupabaseData } from "../components/processor"
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { processSupabaseData } from "../components/processor";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const MapContainer = dynamic<MapContainerProps>(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -59,14 +59,21 @@ export default function MapPage() {
 
   const [locations, setLocations] = useState<any[] | null>([
     {
-        id: "1",
-        name: "CN Tower",
-        images: [{url: '/images/cn-tower.jpeg', month: 'January', year: '2000', description: "CN Tower"}],
-        description:
-          "A 553.3 m-high concrete communications and observation tower in downtown Toronto, Ontario, Canada.",
-        coordinates: [43.6426, -79.3871],
-        date: "May",
-        year: "2023"
+      id: "1",
+      name: "CN Tower",
+      images: [
+        {
+          url: "/images/cn-tower.jpeg",
+          month: "January",
+          year: "2000",
+          description: "CN Tower",
+        },
+      ],
+      description:
+        "A 553.3 m-high concrete communications and observation tower in downtown Toronto, Ontario, Canada.",
+      coordinates: [43.6426, -79.3871],
+      date: "May",
+      year: "2023",
     },
   ]);
 
@@ -106,7 +113,7 @@ export default function MapPage() {
   const router = useRouter();
 
   const handleNavigateToPeople = () => {
-    router.push('/people');
+    router.push("/people");
   };
 
   return (
@@ -127,7 +134,9 @@ export default function MapPage() {
             style={{ height: "100%", width: "100%" }}
           >
             <TileLayer
-              url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"o g
+              url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+              o
+              g
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
 

@@ -1,11 +1,11 @@
 "use client";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default function PeopleSpacesPage() {
   const router = useRouter();
 
   const handleNavigateToMap = () => {
-    router.push('/map');
+    router.push("/map");
   };
 
   return (
@@ -13,7 +13,7 @@ export default function PeopleSpacesPage() {
       <header className="p-4 bg-gray-100">
         <h1 className="text-2xl font-bold">People Spaces</h1>
       </header>
-      
+
       <main className="flex-grow p-4">
         {/* Content for the people spaces page will go here */}
         <p>This is the people spaces page. Content to be added.</p>
