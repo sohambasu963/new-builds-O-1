@@ -7,7 +7,8 @@ interface Location {
   coverImage: string;
   description: string;
   coordinates: [number, number];
-  date: string; // Add this line
+  date: string; // This will now be just the month
+  year: string; // Add this new field for the year
 }
 
 interface OverlayProps {
@@ -20,6 +21,7 @@ export default function Overlay({
   setSelectedLocation,
 }: OverlayProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [description, setDescription] = useState(selectedLocation.description);
 
   useEffect(() => {
     setTimeout(() => setIsVisible(true), 50);
@@ -28,6 +30,10 @@ export default function Overlay({
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(() => setSelectedLocation(null), 300);
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value);
   };
 
   const overlayStyle = {
@@ -40,38 +46,47 @@ export default function Overlay({
     transform: isVisible ? 'translateX(0)' : 'translateX(100%)',
     zIndex: 1000,
     position: 'absolute' as const,
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: '40%',
+    top: '50%',
+    right: '2.5%',
+    width: '599px',
+    height: '774px',
+    marginTop: '-387px', // Half of the height to center vertically
     overflowY: 'auto' as const,
+    borderRadius: '20px', // Updated to 20px
   };
 
   return (
-    <div
-      className="w-full md:w-2/5 h-full overflow-y-auto bg-opacity-30 backdrop-blur-md shadow-lg transition-opacity duration-300"
-      style={overlayStyle}
-    >
-      <div className="relative">
+    <div style={overlayStyle}>
+      <div className="relative pt-8 px-4 pb-20"> {/* Changed pb-32 to pb-24 */}
         <img
           src={selectedLocation.coverImage}
           alt={selectedLocation.name}
-          className="w-full h-48 object-cover"
+          className="w-[448px] h-[313.98px] object-cover rounded-lg mx-auto"
         />
         <button
           onClick={handleClose}
-          className="absolute top-2 right-2 text-white hover:text-gray-300"
+          className="absolute top-10 right-6 text-white hover:text-gray-300"
           aria-label="Close"
         >
           <X size={24} />
         </button>
       </div>
-      <div className="p-4">
-        <h2 className="text-2xl font-bold mb-2 text-white">{selectedLocation.name}</h2>
-        <div className="inline-block bg-[#31574A] text-white text-sm px-2 py-1 rounded-full mb-2">
-          {selectedLocation.date}
+      <div className="px-4 pb-4 bg-black rounded-md border border-[#F2F0E1]">
+        <h2 className="text-[40px] mb-2 mt-6 text-[#F2F0E1] font-apple-garamond">{selectedLocation.name}</h2>
+        <div className="flex space-x-2 mb-2">th
+          <div className="inline-block bg-[#31574A] text-white text-sm px-4 py-1 rounded-full font-apple-garamond uppercase">
+            {selectedLocation.date}
+          </div>
+          <div className="inline-block bg-[#F2F0E1] text-black text-sm px-4 py-1 rounded-full font-apple-garamond">
+            {selectedLocation.year}
+          </div>
         </div>
-        <p className="text-gray-300">{selectedLocation.description}</p>
+        <textarea
+          value={description}
+          onChange={handleDescriptionChange}
+          className="w-full h-[363px] p-2 bg-black text-white rounded-md resize-none font-apple-garamond mt-2"
+          placeholder="Enter description..."
+        />
       </div>
     </div>
   );
