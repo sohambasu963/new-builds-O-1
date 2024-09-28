@@ -211,7 +211,7 @@ export default function MapPage() {
             className="bg-black text-[#F2F0E1] text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-gray-900 transition-colors duration-200"
             aria-label="Switch to people spaces view"
           >
-            People Spaces
+            People
           </button>
         </div>
       </div>
