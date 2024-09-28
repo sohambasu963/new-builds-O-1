@@ -12,6 +12,8 @@ import MarkerShadow from "../../../public/images/marker-shadow.png";
 import { locations } from "./locations";
 import Overlay from "../components/overlay";
 import OldOverlay from "../components/old-overlay";
+import { supabase } from "../supabaseClient.js";
+import { processSupabaseData } from "../components/processor"
 
 const MapContainer = dynamic<MapContainerProps>(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -33,14 +35,18 @@ interface Location {
   coordinates: [number, number];
 }
 
-function MapEvents({ setSelectedLocation }: { setSelectedLocation: React.Dispatch<React.SetStateAction<Location | null>> }) {
-    useMapEvents({
-      click: () => {
-        setTimeout(() => setSelectedLocation(null), 300);
-      },
-    });
-    return null;
-  }
+function MapEvents({
+  setSelectedLocation,
+}: {
+  setSelectedLocation: React.Dispatch<React.SetStateAction<Location | null>>;
+}) {
+  useMapEvents({
+    click: () => {
+      setTimeout(() => setSelectedLocation(null), 300);
+    },
+  });
+  return null;
+}
 
 export default function MapPage() {
   const centerPoint: [number, number] = [43.668522, -79.399061];
@@ -48,6 +54,25 @@ export default function MapPage() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
   );
+
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      const { data, error } = await supabase.from("neighbourhoods").select("*");
+
+      if (error) {
+        console.log("Error:", error);
+      } else {
+        const processedData = processSupabaseData(data);
+        console.log(data);
+        console.log(processedData);
+        setData(processedData);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   const defaultIcon = L.icon({
     iconUrl:
@@ -106,10 +131,10 @@ export default function MapPage() {
         </div>
 
         {selectedLocation && (
-        //   <OldOverlay
-        //     selectedLocation={selectedLocation}
-        //     setSelectedLocation={setSelectedLocation}
-        //   />
+          //   <OldOverlay
+          //     selectedLocation={selectedLocation}
+          //     setSelectedLocation={setSelectedLocation}
+          //   />
           <Overlay
             selectedLocation={selectedLocation}
             setSelectedLocation={setSelectedLocation}

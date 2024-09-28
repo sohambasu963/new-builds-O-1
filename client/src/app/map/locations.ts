@@ -3,7 +3,8 @@ export const locations = [
     id: "1",
     name: "CN Tower",
     coverImage: "https://example.com/cn-tower.jpg",
-    description: "A 553.3 m-high concrete communications and observation tower in downtown Toronto, Ontario, Canada.",
+    description:
+      "A 553.3 m-high concrete communications and observation tower in downtown Toronto, Ontario, Canada.",
     coordinates: [43.6426, -79.3871],
     date: "May",
     year: "2023"
