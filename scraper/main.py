@@ -2,6 +2,25 @@
 import requests
 from bs4 import BeautifulSoup
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+from supabase import create_client, Client
+
+# Load .env file from the root directory
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
+# Access the environment variables
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+
+def init_supabase() -> Client:
+    """
+    Initialize the connection to Supabase.
+    """
+    return create_client(SUPABASE_URL, SUPABASE_KEY)
+
 
 # List of all neighbourhoods in the TPL database
 neighbourhoods = [
@@ -136,26 +155,85 @@ def fetch_city_data(city):
     """
     Fetch data for a given city from the specified street_base_url.
     """
-    # Replace city name dynamically in the base URL
     street_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6719409"
 
     try:
         response = requests.get(street_base_url)
         if response.status_code == 200:
-            city_data = response.json()
-            print(f"Data for {city}:")
-            print(city_data)
+            return response.json()
         else:
             print(
                 f"Failed to retrieve data for {city}. Status code: {response.status_code}"
             )
+            return None
     except Exception as e:
         print(f"Error fetching data for {city}: {e}")
+        return None
+
+
+def fetch_source_details(source_id):
+    """
+    Fetch detailed data for a given source ID from the second endpoint.
+    """
+    detailed_url = f"https://digitalarchive.tpl.ca/objects/{source_id}/json"
+
+    try:
+        response = requests.get(detailed_url)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(
+                f"Failed to retrieve details for Source ID {source_id}. Status code: {response.status_code}"
+            )
+            return None
+    except Exception as e:
+        print(f"Error fetching details for Source ID {source_id}: {e}")
+        return None
+
+
+def insert_city_data(supabase: Client, city: str, combined_data: dict):
+    """
+    Insert combined data into the Supabase table.
+    """
+    try:
+        # Define the table name where the data will be stored
+        table_name = "city_data"
+
+        # Prepare the data to insert
+        data_to_insert = {
+            "name": city,
+            "street_data": combined_data,  # Store the combined result and detailed data as JSONB
+        }
+
+        # Insert the data into the Supabase table
+        response = supabase.table(table_name).insert(data_to_insert).execute()
+        print(f"Data inserted successfully for {city}: {response}")
+    except Exception as e:
+        print(f"Error inserting data for {city} into Supabase: {e}")
 
 
 if __name__ == "__main__":
-    city = "Alderwood"
-    fetch_city_data(city)
+    city = "Financial District"
+
+    # Fetch data for the city
+    city_data = fetch_city_data(city)
+
+    if city_data and "results" in city_data:
+        for result in city_data["results"]:
+            source_id = result["sourceId"]["value"]
+
+            # Fetch the detailed data using the source_id
+            detailed_data = fetch_source_details(source_id)
+
+            if detailed_data:
+                # Combine the 'result' entry with 'detailed_data'
+                combined_data = {
+                    **result,
+                    **detailed_data["object"][0],
+                }  # Merge dictionaries
+
+                # Print the combined result
+                print(combined_data)
 
 
 # # Save Image Function
