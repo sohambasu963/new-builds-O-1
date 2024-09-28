@@ -1,3 +1,17 @@
+@font-face {
+  font-family: 'Apple Garamond';
+  src: url('/fonts/AppleGaramond-Regular.woff2') format('woff2'),
+       url('/fonts/AppleGaramond-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.font-apple-garamond {
+  font-family: 'Apple Garamond', serif;
+  font-weight: normal;
+}
