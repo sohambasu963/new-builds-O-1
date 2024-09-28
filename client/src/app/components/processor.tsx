@@ -4,6 +4,7 @@ export function processSupabaseData(dataArray: any[]): any[] {
         id: data.name ? data.name.toLowerCase() : undefined,
         name: data.name,
         images: [] as Array<{ url: string; month: string; year: string, description: string }>,
+        description: "This is a sample description",
         coordinates: data.geo_coords ? parseCoordinates(data.geo_coords) : null,
       };
   
@@ -12,7 +13,7 @@ export function processSupabaseData(dataArray: any[]): any[] {
         data.street_data.length > 0
       ) {
         // Randomly select up to 5 results first
-        const selectedResults = getRandomItems(data.street_data, 5);
+        const selectedResults = getRandomItems(data.street_data, 8);
   
         // Process each selected result
         result.images = selectedResults.map((item) => {
@@ -62,4 +63,3 @@ export function processSupabaseData(dataArray: any[]): any[] {
     
     return [latitude, longitude];
   }
-  

@@ -9,7 +9,7 @@ import * as L from "leaflet";
 import "leaflet-defaulticon-compatibility";
 import { Marker, TileLayer } from "react-leaflet";
 import MarkerShadow from "../../../public/images/marker-shadow.png";
-import { locations } from "./locations";
+// import { locations } from "./locations";
 import Overlay from "../components/overlay";
 import OldOverlay from "../components/old-overlay";
 import { supabase } from "../supabaseClient.js";
@@ -57,7 +57,18 @@ export default function MapPage() {
     null,
   );
 
-  const [data, setData] = useState(null);
+  const [locations, setLocations] = useState<any[] | null>([
+    {
+        id: "1",
+        name: "CN Tower",
+        images: [{url: '/images/cn-tower.jpeg', month: 'January', year: '2000', description: "CN Tower"}],
+        description:
+          "A 553.3 m-high concrete communications and observation tower in downtown Toronto, Ontario, Canada.",
+        coordinates: [43.6426, -79.3871],
+        date: "May",
+        year: "2023"
+    },
+  ]);
 
   useEffect(() => {
     async function fetchData() {
@@ -67,9 +78,9 @@ export default function MapPage() {
         console.log("Error:", error);
       } else {
         const processedData = processSupabaseData(data);
-        console.log(data);
+        // console.log(data);
         console.log(processedData);
-        setData(processedData);
+        setLocations(processedData);
       }
     }
 
