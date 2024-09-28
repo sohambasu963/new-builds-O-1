@@ -11,6 +11,7 @@ import { Marker, TileLayer } from "react-leaflet";
 import MarkerShadow from "../../../public/images/marker-shadow.png";
 import { locations } from "./locations";
 import Overlay from "../components/overlay";
+import OldOverlay from "../components/old-overlay";
 
 const MapContainer = dynamic<MapContainerProps>(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -105,6 +106,10 @@ export default function MapPage() {
         </div>
 
         {selectedLocation && (
+        //   <OldOverlay
+        //     selectedLocation={selectedLocation}
+        //     setSelectedLocation={setSelectedLocation}
+        //   />
           <Overlay
             selectedLocation={selectedLocation}
             setSelectedLocation={setSelectedLocation}
