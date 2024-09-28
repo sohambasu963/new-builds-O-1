@@ -197,7 +197,7 @@ def insert_city_data(supabase: Client, city: str, combined_data: dict):
     """
     try:
         # Define the table name where the data will be stored
-        table_name = "city_data"
+        table_name = "neighbourhoods"
 
         # Prepare the data to insert
         data_to_insert = {
@@ -212,44 +212,75 @@ def insert_city_data(supabase: Client, city: str, combined_data: dict):
         print(f"Error inserting data for {city} into Supabase: {e}")
 
 
-if __name__ == "__main__":
-    city = "Financial District"
+def fetch_and_combine_data_for_city(city: str):
+    """
+    Fetch and combine all data for a given city, including source details for each result.
+    """
+    combined_data_list = []
 
     # Fetch data for the city
     city_data = fetch_city_data(city)
 
-    if city_data and "results" in city_data:
-        for result in city_data["results"]:
-            source_id = result["sourceId"]["value"]
+    ## Additional Source Details
+    # if city_data and "results" in city_data:
+    #     for result in city_data["results"]:
+    #         source_id = result["sourceId"]["value"]
 
-            # Fetch the detailed data using the source_id
-            detailed_data = fetch_source_details(source_id)
+    #         # Fetch the detailed data using the source_id
+    #         detailed_data = fetch_source_details(source_id)
 
-            if detailed_data:
-                # Combine the 'result' entry with 'detailed_data'
-                combined_data = {
-                    **result,
-                    **detailed_data["object"][0],
-                }  # Merge dictionaries
+    #         if detailed_data:
+    #             # Combine the 'result' entry with 'detailed_data'
+    #             combined_data = {
+    #                 **result,
+    #                 **detailed_data["object"][0],
+    #             }  # Merge dictionaries
+    #             combined_data_list.append(
+    #                 combined_data
+    #             )  # Add the combined data to the list
+    # else:
+    #     print(f"No data found for {city}")
 
-                # Print the combined result
-                print(combined_data)
+    return city_data
 
 
-# # Save Image Function
-# def save_image(image_url, save_path, image_name):
-#     """
-#     Save an image from a given URL to a specified path.
-#     """
-#     try:
-#         response = requests.get(image_url)
-#         if response.status_code == 200:
-#             with open(os.path.join(save_path, f"{image_name}.jpg"), "wb") as f:
-#                 f.write(response.content)
-#             print(f"Image saved: {image_name}")
-#         else:
-#             print(
-#                 f"Failed to retrieve image {image_name}. Status code: {response.status_code}"
-#             )
-#     except Exception as e:
-#         print(f"Error saving image {image_name}: {e}")
+def insert_combined_data_to_supabase(
+    supabase: Client, city: str, combined_data_list: list
+):
+    """
+    Insert combined data for a specific city into the Supabase table.
+    """
+    try:
+        # Define the table name where the data will be stored
+        table_name = "neighbourhoods"
+
+        # Prepare the data to insert
+        data_to_insert = {
+            "name": city,
+            "street_data": combined_data_list,  # Store the entire list of combined data as JSONB
+        }
+
+        # Insert the data into the Supabase table
+        response = supabase.table(table_name).insert(data_to_insert).execute()
+        print(f"Data inserted successfully for {city}: {response}")
+    except Exception as e:
+        print(f"Error inserting data for {city} into Supabase: {e}")
+
+
+if __name__ == "__main__":
+    # Initialize Supabase connection
+    supabase = init_supabase()
+
+    # Loop through all cities in the neighbourhoods list
+    for city in neighbourhoods:
+        print(f"Processing data for {city}...")
+
+        # Fetch and combine all data for the city
+        combined_data_list = fetch_and_combine_data_for_city(city)
+
+        if combined_data_list:
+            # Upload all combined data to the Supabase table after processing the entire city
+            insert_combined_data_to_supabase(supabase, city, combined_data_list)
+            print(f"Completed processing for {city}.\n")
+        else:
+            print(f"No data to upload for {city}.")
