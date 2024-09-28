@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from supabase import create_client, Client
+import re
 
 # Load .env file from the root directory
 env_path = Path(__file__).resolve().parent.parent / ".env"
@@ -212,14 +213,47 @@ def insert_city_data(supabase: Client, city: str, combined_data: dict):
         print(f"Error inserting data for {city} into Supabase: {e}")
 
 
+def extract_year(display_date_value):
+    """
+    Extract 4 consecutive digits (representing a year) from the displayDate value.
+    """
+    match = re.search(
+        r"\b\d{4}\b", display_date_value
+    )  # Search for 4 consecutive digits
+    if match:
+        return match.group(0)  # Return the year in "YYYY" format
+    else:
+        return "Year not found"
+
+
 def fetch_and_combine_data_for_city(city: str):
     """
     Fetch and combine all data for a given city, including source details for each result.
+    Filter out results where no valid year is found in the 'displayDate'.
     """
-    combined_data_list = []
 
     # Fetch data for the city
     city_data = fetch_city_data(city)
+
+    if city_data and "results" in city_data:
+        valid_results = []  # List to store valid results
+
+        for result in city_data["results"]:
+            display_date = result.get("displayDate", {}).get("value")
+            if display_date:
+                year = extract_year(display_date)
+                if year != "Year not found":  # Only include results with a valid year
+                    result["standardized_year"] = (
+                        year  # Optionally, store the year in the result
+                    )
+                    valid_results.append(result)  # Add valid result to the list
+
+        # Print or return the filtered valid results
+        # print(f"Valid results for {city}: {valid_results}")
+        return valid_results
+    else:
+        print("No results found.")
+        return []
 
     ## Additional Source Details
     # if city_data and "results" in city_data:
@@ -269,8 +303,7 @@ def insert_combined_data_to_supabase(
 
 if __name__ == "__main__":
     # Initialize Supabase connection
-    supabase = init_supabase()
-
+    supabase = init_supabase()    
     # Loop through all cities in the neighbourhoods list
     for city in neighbourhoods:
         print(f"Processing data for {city}...")
