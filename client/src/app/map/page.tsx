@@ -169,7 +169,7 @@ export default function MapPage() {
         <div className="absolute bottom-4 left-4 z-[1001]">
           <button
             onClick={handleNavigateToPeople}
-            className="bg-[#31574A] text-white text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-[#3e6b5c] transition-colors duration-200"
+            className="bg-black text-[#F2F0E1] text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-gray-900 transition-colors duration-200"
             aria-label="Switch to people spaces view"
           >
             People Spaces
