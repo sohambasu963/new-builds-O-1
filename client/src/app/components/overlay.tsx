@@ -30,14 +30,20 @@ export default function Overlay({
   };
 
   const overlayStyle = {
-    background: 'rgba(0, 0, 0, 0.8)', // More transparent white background
-    backdropFilter: 'blur(2px)', // Reduced blur for better visibility of the map
+    background: 'rgba(0, 0, 0, 0.74)',
+    backdropFilter: 'blur(2px)',
     WebkitBackdropFilter: 'blur(2px)',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    transition: 'opacity 300ms ease-in-out',
-    zIndex: 1000
-    // opacity: isVisible ? 1 : 0,
-    // transform: isVisible ? 'translateX(0)' : 'translateX(100%)',
+    transition: 'opacity 300ms ease-in-out, transform 300ms ease-in-out',
+    opacity: isVisible ? 1 : 0,
+    transform: isVisible ? 'translateX(0)' : 'translateX(100%)',
+    zIndex: 1000,
+    position: 'absolute' as const,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: '40%',
+    overflowY: 'auto' as const,
   };
 
 
