@@ -14,6 +14,8 @@ import Overlay from "../components/overlay";
 import OldOverlay from "../components/old-overlay";
 import { supabase } from "../supabaseClient.js";
 import { processSupabaseData } from "../components/processor"
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const MapContainer = dynamic<MapContainerProps>(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -89,10 +91,17 @@ export default function MapPage() {
     setSelectedLocation(location);
   };
 
+  const [isToggled, setIsToggled] = useState(false);
+  const router = useRouter();
+
+  const handleNavigateToPeople = () => {
+    router.push('/people');
+  };
+
   return (
     <>
       <LeafletCSS />
-      <div className="w-screen h-screen flex">
+      <div className="w-screen h-screen flex relative">
         <div id="map" className="flex-grow">
           <MapContainer
             center={centerPoint}
@@ -107,7 +116,7 @@ export default function MapPage() {
             style={{ height: "100%", width: "100%" }}
           >
             <TileLayer
-              url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+              url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"o g
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
 
@@ -131,37 +140,21 @@ export default function MapPage() {
         </div>
 
         {selectedLocation && (
-          //   <OldOverlay
-          //     selectedLocation={selectedLocation}
-          //     setSelectedLocation={setSelectedLocation}
-          //   />
           <Overlay
             selectedLocation={selectedLocation}
             setSelectedLocation={setSelectedLocation}
           />
         )}
 
-        {/* {selectedLocation && (
-          <div className="w-1/3 bg-white shadow-lg transform transition-transform duration-300 ease-in-out translate-x-0">
-            <div className="p-4">
-              <h2 className="text-2xl font-bold mb-2">
-                {selectedLocation.name}
-              </h2>
-              <img
-                src={selectedLocation.coverImage}
-                alt={selectedLocation.name}
-                className="w-full h-48 object-cover mb-4 rounded"
-              />
-              <p className="text-gray-600">{selectedLocation.description}</p>
-              <button
-                onClick={() => setSelectedLocation(null)}
-                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )} */}
+        <div className="absolute bottom-4 left-4 z-[1001]">
+          <button
+            onClick={handleNavigateToPeople}
+            className="bg-[#31574A] text-white text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-[#3e6b5c] transition-colors duration-200"
+            aria-label="Switch to people spaces view"
+          >
+            People Spaces
+          </button>
+        </div>
       </div>
     </>
   );
