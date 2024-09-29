@@ -15,7 +15,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Send a request to Cohere's chat model
     const response = await client.chat({
       message: message,
-      model: "command-r-plus-08-2024",
+      model: "command-r",
       preamble:
         "You are an AI-assistant chatbot. You are trained to assist users by providing thorough and helpful responses to their queries.",
     });
