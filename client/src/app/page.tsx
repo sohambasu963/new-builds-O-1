@@ -18,15 +18,21 @@ import { MapContainerProps, useMapEvents } from "react-leaflet";
 
 const MapContainer = dynamic<MapContainerProps>(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false }
+  { ssr: false },
 );
 
-const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), {
-  ssr: false,
-});
-const Marker = dynamic(() => import("react-leaflet").then((mod) => mod.Marker), {
-  ssr: false,
-});
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  {
+    ssr: false,
+  },
+);
+const Marker = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Marker),
+  {
+    ssr: false,
+  },
+);
 
 const LeafletCSS = () => {
   useEffect(() => {
@@ -119,7 +125,7 @@ const MapContent = () => {
         const locationParam = searchParams.get("location");
         if (locationParam) {
           const matchingLocation = processedData.find(
-            (loc) => loc.id === locationParam
+            (loc) => loc.id === locationParam,
           );
           if (matchingLocation) {
             setSelectedLocation({
@@ -137,12 +143,13 @@ const MapContent = () => {
   useEffect(() => {
     // Initialize audio context and elements
     if (typeof window !== "undefined") {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      audioRef.current = new Audio('/audio/background-music.mp3');
+      audioContextRef.current = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+      audioRef.current = new Audio("/audio/background-music.mp3");
       audioRef.current.loop = true;
 
-      clickSound1Ref.current = new Audio('/audio/click-sound.mp3');
-      clickSound2Ref.current = new Audio('/audio/click-sound2.mp3');
+      clickSound1Ref.current = new Audio("/audio/click-sound.mp3");
+      clickSound2Ref.current = new Audio("/audio/click-sound2.mp3");
     }
 
     return () => {
@@ -165,10 +172,13 @@ const MapContent = () => {
   }, []);
 
   const playClickSound = useCallback(() => {
-    const randomSound = Math.random() < 0.5 ? clickSound1Ref.current : clickSound2Ref.current;
+    const randomSound =
+      Math.random() < 0.5 ? clickSound1Ref.current : clickSound2Ref.current;
     if (randomSound) {
       randomSound.currentTime = 0;
-      randomSound.play().catch(error => console.error("Error playing click sound:", error));
+      randomSound
+        .play()
+        .catch((error) => console.error("Error playing click sound:", error));
     }
   }, []);
 
@@ -192,7 +202,7 @@ const MapContent = () => {
       newSearchParams.set("location", location.id);
       router.push(`?${newSearchParams.toString()}`, { scroll: false });
     },
-    [router, searchParams, playClickSound]
+    [router, searchParams, playClickSound],
   );
 
   const toggleAudio = useCallback(() => {
@@ -283,13 +293,13 @@ const MapContent = () => {
           >
             People
           </button>
-          <AudioToggle 
-            isAudioOn={isAudioOn} 
-            toggleAudio={toggleAudio} 
+          <AudioToggle
+            isAudioOn={isAudioOn}
+            toggleAudio={toggleAudio}
             className="bg-black text-[#F2F0E1] hover:bg-gray-900"
           />
         </div>
       </div>
     </>
   );
-}
+};

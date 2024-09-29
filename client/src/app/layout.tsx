@@ -1,11 +1,11 @@
-import { Metadata } from 'next'
+import { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "TimeHopTO",
   description: "New Builds Let's Go",
   icons: {
-    icon: '/favicon.ico',
+    icon: "/favicon.ico",
   },
 };
 

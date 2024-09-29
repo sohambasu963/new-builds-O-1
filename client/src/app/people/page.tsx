@@ -6,10 +6,10 @@ import AudioToggle from "@/components/AudioToggle";
 import "./people.css";
 
 interface Person {
-  image: string,
-  title: string,
-  year: string,
-  month: string
+  image: string;
+  title: string;
+  year: string;
+  month: string;
 }
 
 export default function PeoplePage() {
@@ -57,48 +57,47 @@ export default function PeoplePage() {
   useEffect(() => {
     if (selectedPerson) {
       const fetchStream = async () => {
-          try {
-              const payload = {
-                  data: selectedPerson
-              };
+        try {
+          const payload = {
+            data: selectedPerson,
+          };
 
-              const res = await fetch('/api/stream', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(payload),
-              });
+          const res = await fetch("/api/stream", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
 
-              if (!res.ok) {
-                  throw new Error(`HTTP error! status: ${res.status}`);
-              }
-
-              const reader = res.body?.getReader();
-              const decoder = new TextDecoder();
-              let completeResponse = '';
-
-              while (true) {
-                  const { done, value } = await reader?.read() ?? { done: true };
-                  if (done) break;
-                  completeResponse += decoder.decode(value);
-              }
-
-              const parsedResponse = JSON.parse(completeResponse);
-              setResponse(parsedResponse.summary);
-
-          } catch (error) {
-              console.error('Error while fetching the stream:', error);
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
           }
+
+          const reader = res.body?.getReader();
+          const decoder = new TextDecoder();
+          let completeResponse = "";
+
+          while (true) {
+            const { done, value } = (await reader?.read()) ?? { done: true };
+            if (done) break;
+            completeResponse += decoder.decode(value);
+          }
+
+          const parsedResponse = JSON.parse(completeResponse);
+          setResponse(parsedResponse.summary);
+        } catch (error) {
+          console.error("Error while fetching the stream:", error);
+        }
       };
 
       fetchStream();
     }
 
     return () => {
-        setResponse('');
+      setResponse("");
     };
-}, [selectedPerson]);
+  }, [selectedPerson]);
 
   useEffect(() => {
     const fetchRandomImage = async () => {
@@ -133,8 +132,9 @@ export default function PeoplePage() {
     window.addEventListener("scroll", handleScroll);
 
     // Initialize audio context and element
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    audioRef.current = new Audio('/audio/background-music.mp3');
+    audioContextRef.current = new (window.AudioContext ||
+      (window as any).webkitAudioContext)();
+    audioRef.current = new Audio("/audio/background-music.mp3");
     audioRef.current.loop = true;
 
     return () => {
@@ -167,13 +167,14 @@ export default function PeoplePage() {
   return (
     <div className="w-screen flex flex-col">
       <div className="background-gradient"></div>
-    <header className="fixed top-8 left-8 z-[1000]">
-      <h1 className="text-7xl text-[#1E1E1E] font-apple-garamond">
-        Meet the Shawties of <br /> <i>TORONTO</i></h1>
-    </header>
+      <header className="fixed top-8 left-8 z-[1000]">
+        <h1 className="text-7xl text-[#1E1E1E] font-apple-garamond">
+          Meet the Shawties of <br /> <i>TORONTO</i>
+        </h1>
+      </header>
 
-    {/* Slider Section */}
-    <div className="slider">
+      {/* Slider Section */}
+      <div className="slider">
         {data.map((person, index) => (
           <div
             key={index}
@@ -186,34 +187,34 @@ export default function PeoplePage() {
           </div>
         ))}
       </div>
-    
-    {/* Image Modal */}
-    {selectedPerson && (
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[2000]" 
-        onClick={() => setSelectedPerson(null)}
-      >
-        <div 
-          className="rounded-lg p-8 max-w-6xl w-10/12 max-h-[92vh] flex flex-row items-start"
-          onClick={(e) => e.stopPropagation()}
+
+      {/* Image Modal */}
+      {selectedPerson && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[2000]"
+          onClick={() => setSelectedPerson(null)}
         >
-          <div className="w-3/5 pr-2">
-            <img 
-              src={selectedPerson.image} 
-              alt="Selected" 
-              className="max-w-full max-h-[85vh] object-contain"
-            />
-          </div>
-          <div className="w-2/5 pl-2 text-white overflow-y-auto max-h-[85vh]">
-            <p className="font-apple-garamond text-lg">
-              {response ? response : 'Loading description...'}
-            </p>
+          <div
+            className="rounded-lg p-8 max-w-6xl w-10/12 max-h-[92vh] flex flex-row items-start"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-3/5 pr-2">
+              <img
+                src={selectedPerson.image}
+                alt="Selected"
+                className="max-w-full max-h-[85vh] object-contain"
+              />
+            </div>
+            <div className="w-2/5 pl-2 text-white overflow-y-auto max-h-[85vh]">
+              <p className="font-apple-garamond text-lg">
+                {response ? response : "Loading description..."}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
-      <div className="fixed bottom-4 left-4 z-[1001] flex items-center space-x-2"> 
+      <div className="fixed bottom-4 left-4 z-[1001] flex items-center space-x-2">
         <button
           onClick={handleNavigateToMap}
           className="bg-[#F2F0E1] text-black text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-[#e6e4d5] transition-colors duration-200"
@@ -221,9 +222,9 @@ export default function PeoplePage() {
         >
           Spaces
         </button>
-        <AudioToggle 
-          isAudioOn={isAudioOn} 
-          toggleAudio={toggleAudio} 
+        <AudioToggle
+          isAudioOn={isAudioOn}
+          toggleAudio={toggleAudio}
           className="bg-[#F2F0E1] text-black hover:bg-[#e6e4d5]"
         />
       </div>
