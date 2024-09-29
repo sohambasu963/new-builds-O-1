@@ -157,9 +157,16 @@ def fetch_city_data(city):
     Fetch data for a given city from the specified street_base_url.
     """
     street_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6719409"
+    people_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6718023"
+    dwellings_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6714631"
+    festivals_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6715063"
+    automobiles_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6712759"
+    industry_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6714425"
+    public_buildings_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6718211"
+    retail_stores_base_url = f"https://digitalarchive.tpl.ca/search/*/objects/json?filter=geoNeighbourhood%3A{city.replace(' ', '%20')}%3BsubjectThesFilter%3Ahttp%25255C%3A%252F%252Fnodes.emuseum.com%252FY8SQECAV%252Fapis%252Femuseum%252Fnetwork%252Fv1%252Fvocabularies%252FtermMaster6719376"
 
     try:
-        response = requests.get(street_base_url)
+        response = requests.get(retail_stores_base_url)
         if response.status_code == 200:
             return response.json()
         else:
@@ -172,27 +179,27 @@ def fetch_city_data(city):
         return None
 
 
-def fetch_source_details(source_id):
-    """
-    Fetch detailed data for a given source ID from the second endpoint.
-    """
-    detailed_url = f"https://digitalarchive.tpl.ca/objects/{source_id}/json"
+# def fetch_source_details(source_id):
+#     """
+#     Fetch detailed data for a given source ID from the second endpoint.
+#     """
+#     detailed_url = f"https://digitalarchive.tpl.ca/objects/{source_id}/json"
 
-    try:
-        response = requests.get(detailed_url)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(
-                f"Failed to retrieve details for Source ID {source_id}. Status code: {response.status_code}"
-            )
-            return None
-    except Exception as e:
-        print(f"Error fetching details for Source ID {source_id}: {e}")
-        return None
+#     try:
+#         response = requests.get(detailed_url)
+#         if response.status_code == 200:
+#             return response.json()
+#         else:
+#             print(
+#                 f"Failed to retrieve details for Source ID {source_id}. Status code: {response.status_code}"
+#             )
+#             return None
+#     except Exception as e:
+#         print(f"Error fetching details for Source ID {source_id}: {e}")
+#         return None
 
 
-def update_city_data(supabase: Client, city: str, bio_data: dict):
+def update_city_data(supabase: Client, city: str, data: dict, field_name: str):
     """
     Update the bio data for an existing neighborhood in the Supabase table.
     """
@@ -202,7 +209,7 @@ def update_city_data(supabase: Client, city: str, bio_data: dict):
 
         # Prepare the data to update (in this case, updating the bio column)
         data_to_update = {
-            "bio": bio_data  # Assuming you want to update the 'bio' field
+            f"{field_name}": data  # Assuming you want to update the 'bio' field
         }
 
         # Update the row where the 'name' matches the city
@@ -219,7 +226,8 @@ def update_city_data(supabase: Client, city: str, bio_data: dict):
             )
 
     except Exception as e:
-        print(f"Error updating data for {city} in Supabase: {e}")
+        pass
+        # print(f"Error updating data for {city} in Supabase: {e}")
 
 
 def extract_year(display_date_value):
@@ -307,7 +315,8 @@ def insert_combined_data_to_supabase(
         response = supabase.table(table_name).insert(data_to_insert).execute()
         print(f"Data inserted successfully for {city}: {response}")
     except Exception as e:
-        print(f"Error inserting data for {city} into Supabase: {e}")
+        pass
+        # print(f"Error inserting data for {city} into Supabase: {e}")
 
 
 if __name__ == "__main__":
@@ -322,7 +331,7 @@ if __name__ == "__main__":
 
         if combined_data_list:
             # Upload all combined data to the Supabase table after processing the entire city
-            insert_combined_data_to_supabase(supabase, city, combined_data_list)
+            update_city_data(
+                supabase, city, combined_data_list, field_name="retail_stores"
+            )
             print(f"Completed processing for {city}.\n")
-        else:
-            print(f"No data to upload for {city}.")
