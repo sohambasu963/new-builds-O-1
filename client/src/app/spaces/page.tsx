@@ -136,12 +136,16 @@ export default function MapPage() {
   const [isAudioOn, setIsAudioOn] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const clickSoundRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     // Initialize audio context and element
     audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     audioRef.current = new Audio('/audio/background-music.mp3'); // Updated path
     audioRef.current.loop = true; // If you want the audio to loop
+
+    // Initialize click sound
+    clickSoundRef.current = new Audio('/audio/click-sound.mp3');
 
     return () => {
       // Cleanup
@@ -153,7 +157,17 @@ export default function MapPage() {
         audioContextRef.current.close();
         audioContextRef.current = null;
       }
+      if (clickSoundRef.current) {
+        clickSoundRef.current = null;
+      }
     };
+  }, []);
+
+  const playClickSound = useCallback(() => {
+    if (clickSoundRef.current) {
+      clickSoundRef.current.currentTime = 0; // Reset to start
+      clickSoundRef.current.play().catch(error => console.error("Error playing click sound:", error));
+    }
   }, []);
 
   const handleNavigateToPeople = () => {
@@ -166,6 +180,7 @@ export default function MapPage() {
 
   const handleMarkerClick = useCallback(
     (location: Location) => {
+      playClickSound(); // Play click sound
       setSelectedLocation({
         ...location,
         coordinates: location.coordinates as [number, number],
@@ -175,7 +190,7 @@ export default function MapPage() {
       newSearchParams.set("location", location.id);
       router.push(`?${newSearchParams.toString()}`, { scroll: false });
     },
-    [router, searchParams],
+    [router, searchParams, playClickSound],
   );
 
   const toggleAudio = useCallback(() => {
@@ -221,13 +236,6 @@ export default function MapPage() {
                   key={location.id}
                   position={location.coordinates}
                   icon={defaultIcon}
-                  // eventHandlers={{
-                  //   click: () =>
-                  //     setSelectedLocation({
-                  //       ...location,
-                  //       coordinates: location.coordinates as [number, number],
-                  //     }),
-                  // }}
                   eventHandlers={{
                     click: () => handleMarkerClick(location),
                   }}
