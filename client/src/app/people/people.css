@@ -16,11 +16,9 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg)
-      rotateZ(-120deg);
+    transform: translate3d(-50%, -50%, 0);
     transform-style: preserve-3d;
-    transition: 1s cubic-bezier(0.075, 0.82, 0.165, 1);
-    user-select: none;
+    animation: slide 5s forwards;
   }
   
   .card {
@@ -41,3 +39,15 @@
     object-fit: cover;
   }
   
+  /* Keyframes for infinite sliding */
+  @keyframes slide {
+    0% {
+      transform: translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg);
+    }
+    50% {
+      transform: translate3d(-50%, -50%, 0) rotateX(360deg) rotateY(25deg) rotateZ(120deg);
+    }
+    100% {
+      transform: translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg);
+    }
+  }
