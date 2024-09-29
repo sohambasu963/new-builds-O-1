@@ -85,6 +85,7 @@ export default function MapPage() {
         console.log("Error:", error);
       } else {
         const processedData = processSupabaseData(data);
+        console.log(processedData);
         setLocations(processedData);
 
         const locationParam = searchParams.get('location');
@@ -103,18 +104,18 @@ export default function MapPage() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const locationParam = searchParams.get('location');
-    if (locationParam && locations) {
-      const matchingLocation = locations.find(loc => loc.id === locationParam);
-      if (matchingLocation) {
-        setSelectedLocation({
-          ...matchingLocation,
-          coordinates: matchingLocation.coordinates as [number, number],
-        });
-      }
-    }
-  }, [searchParams, locations]);
+  // useEffect(() => {
+  //   const locationParam = searchParams.get('location');
+  //   if (locationParam && locations) {
+  //     const matchingLocation = locations.find(loc => loc.id === locationParam);
+  //     if (matchingLocation) {
+  //       setSelectedLocation({
+  //         ...matchingLocation,
+  //         coordinates: matchingLocation.coordinates as [number, number],
+  //       });
+  //     }
+  //   }
+  // }, [searchParams, locations]);
 
   const defaultIcon = L.icon({
     iconUrl:

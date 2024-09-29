@@ -1,20 +1,29 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { X } from "lucide-react";
 
-interface Location {
-  id: string;
-  name: string;
-  images: Array<{
-    url: string;
+interface Bio {
+    description: string;
+    funFact: string;
+    question: string;
+    name: string;
+    stories: string;
+  }
+  
+  interface Location {
+    id: string;
+    name: string;
+    images: Array<{
+      url: string;
+      month: string;
+      year: string;
+      description: string;
+    }>;
+    bio: Bio;
+    coordinates: [number, number];
     month: string;
     year: string;
-    description: string;
-  }>;
-  description: string;
-  coordinates: [number, number];
-  month: string;
-  year: string;
-}
+  }
+  
 
 interface OverlayProps {
   selectedLocation: Location;
@@ -26,7 +35,7 @@ export default function Overlay({
   setSelectedLocation,
 }: OverlayProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [description, setDescription] = useState(selectedLocation.description);
+//   const [description, setDescription] = useState(selectedLocation.description);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
@@ -46,11 +55,11 @@ export default function Overlay({
     setTimeout(() => setSelectedLocation(null), 300);
   };
 
-  const handleDescriptionChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
-    setDescription(e.target.value);
-  };
+//   const handleDescriptionChange = (
+//     e: React.ChangeEvent<HTMLTextAreaElement>,
+//   ) => {
+//     setDescription(e.target.value);
+//   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "ArrowLeft") {
@@ -131,7 +140,11 @@ export default function Overlay({
           className="w-full h-[363px] p-2 bg-black text-white rounded-[20px] resize-none font-instrument-sans mt-2"
           placeholder="Enter description..."
         /> */}
-        <p className="text-white font-apple-garamond mt-4">{description}</p>
+        <p className="text-white font-apple-garamond mt-4">{selectedLocation.bio.description}</p>
+
+        <p className="text-white font-apple-garamond mt-4"><b>Fun Fact:</b> {selectedLocation.bio.funFact}</p>
+
+        <p className="text-white font-apple-garamond mt-4"><b>Question:</b> {selectedLocation.bio.question}</p>
       </div>
     </div>
   );
