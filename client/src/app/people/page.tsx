@@ -1,11 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { processPeopleImages } from "../../components/people-processor";
 import "./people.css";
 
 export default function PeoplePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const location = searchParams.get("location");
+
+
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,6 +35,13 @@ export default function PeoplePage() {
 
   const handleMouseOut = (e: any) => {
     e.currentTarget.style.left = "0%";
+  };
+
+  const capitalizeWords = (str: string) => {
+    return str
+      .split(/[-\s]/) // Split by spaces or hyphens
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
+      .join(str.includes('-') ? '-' : ' '); // Rejoin with the original delimiter
   };
 
   useEffect(() => {
@@ -61,7 +72,7 @@ export default function PeoplePage() {
   return (
     <div className="w-screen h-screen flex flex-col bg-white">
       <header className="p-4 bg-gray-100">
-        <h1 className="text-2xl font-bold">Meet the People of Dupont Street</h1>
+        <h1 className="text-2xl font-bold">Meet the People of {capitalizeWords(location!)}</h1>
       </header>
 
       {/* Slider Section */}
