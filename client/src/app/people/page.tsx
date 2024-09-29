@@ -4,9 +4,16 @@ import { useRouter } from "next/navigation";
 import { processPeopleImages } from "../../components/people-processor";
 import AudioToggle from "@/components/AudioToggle";
 
+interface ProcessedData {
+  // Define the structure of your processed data here
+  id: string;
+  name: string;
+  // ... other properties
+}
+
 export default function PeoplePage() {
   const router = useRouter();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<ProcessedData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);

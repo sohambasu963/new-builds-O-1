@@ -137,6 +137,8 @@ export default function MapPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const clickSoundRef = useRef<HTMLAudioElement | null>(null);
+  const clickSound1Ref = useRef<HTMLAudioElement | null>(null);
+  const clickSound2Ref = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     // Initialize audio context and element
@@ -144,8 +146,9 @@ export default function MapPage() {
     audioRef.current = new Audio('/audio/background-music.mp3'); // Updated path
     audioRef.current.loop = true; // If you want the audio to loop
 
-    // Initialize click sound
-    clickSoundRef.current = new Audio('/audio/click-sound.mp3');
+    // Initialize click sounds
+    clickSound1Ref.current = new Audio('/audio/click-sound.mp3');
+    clickSound2Ref.current = new Audio('/audio/click-sound2.mp3');
 
     return () => {
       // Cleanup
@@ -160,13 +163,20 @@ export default function MapPage() {
       if (clickSoundRef.current) {
         clickSoundRef.current = null;
       }
+      if (clickSound1Ref.current) {
+        clickSound1Ref.current = null;
+      }
+      if (clickSound2Ref.current) {
+        clickSound2Ref.current = null;
+      }
     };
   }, []);
 
   const playClickSound = useCallback(() => {
-    if (clickSoundRef.current) {
-      clickSoundRef.current.currentTime = 0; // Reset to start
-      clickSoundRef.current.play().catch(error => console.error("Error playing click sound:", error));
+    const randomSound = Math.random() < 0.5 ? clickSound1Ref.current : clickSound2Ref.current;
+    if (randomSound) {
+      randomSound.currentTime = 0; // Reset to start
+      randomSound.play().catch(error => console.error("Error playing click sound:", error));
     }
   }, []);
 
