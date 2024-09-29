@@ -9,7 +9,7 @@
     width: 100vw;
     height: 800vh;
     overflow: auto;
-    background: #000;
+    background: linear-gradient(to right, #988D8A, #F2F0E1);
   }
   
   .slider {
