@@ -7,7 +7,6 @@ export default function PeoplePage() {
   const router = useRouter();
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const handleNavigateToMap = () => {
     router.push("/spaces");
@@ -16,7 +15,6 @@ export default function PeoplePage() {
   useEffect(() => {
     const fetchRandomImage = async () => {
       setIsLoading(true);
-      setError(null);
       try {
         const response = await fetch("/api/people");
         if (!response.ok) {
@@ -26,8 +24,6 @@ export default function PeoplePage() {
         const processedData = processPeopleImages(result.data);
         console.log(processedData);
         setData(processedData);
-      } catch (err: any) {
-        setError(err.message);
       } finally {
         setIsLoading(false);
       }
