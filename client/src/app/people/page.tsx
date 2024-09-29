@@ -16,7 +16,7 @@ export default function PeoplePage() {
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const handleNavigateToMap = () => {
-    router.push("/spaces");
+    router.push("/");
   };
 
   const handleScroll = () => {
