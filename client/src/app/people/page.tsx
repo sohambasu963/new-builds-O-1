@@ -55,43 +55,45 @@ export default function PeoplePage() {
   // };
 
   useEffect(() => {
-    const fetchStream = async () => {
-        try {
-            const payload = {
-                data: selectedPerson
-            };
+    if (selectedPerson) {
+      const fetchStream = async () => {
+          try {
+              const payload = {
+                  data: selectedPerson
+              };
 
-            const res = await fetch('/api/stream', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
+              const res = await fetch('/api/stream', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(payload),
+              });
 
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
+              if (!res.ok) {
+                  throw new Error(`HTTP error! status: ${res.status}`);
+              }
 
-            const reader = res.body?.getReader();
-            const decoder = new TextDecoder();
-            let completeResponse = '';
+              const reader = res.body?.getReader();
+              const decoder = new TextDecoder();
+              let completeResponse = '';
 
-            while (true) {
-                const { done, value } = await reader?.read() ?? { done: true };
-                if (done) break;
-                completeResponse += decoder.decode(value);
-            }
+              while (true) {
+                  const { done, value } = await reader?.read() ?? { done: true };
+                  if (done) break;
+                  completeResponse += decoder.decode(value);
+              }
 
-            const parsedResponse = JSON.parse(completeResponse);
-            setResponse(parsedResponse.summary);
+              const parsedResponse = JSON.parse(completeResponse);
+              setResponse(parsedResponse.summary);
 
-        } catch (error) {
-            console.error('Error while fetching the stream:', error);
-        }
-    };
+          } catch (error) {
+              console.error('Error while fetching the stream:', error);
+          }
+      };
 
-    fetchStream();
+      fetchStream();
+    }
 
     return () => {
         setResponse('');

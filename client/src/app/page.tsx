@@ -35,6 +35,15 @@ const LeafletCSS = () => {
   return null;
 };
 
+const LeafletCompatibility = () => {
+  useEffect(() => {
+    require("leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css");
+    require("leaflet-defaulticon-compatibility");
+  }, []);
+
+  return null;
+};
+
 interface Location {
   id: string;
   name: string;
@@ -223,6 +232,7 @@ const MapContent = () => {
   return (
     <>
       <LeafletCSS />
+      <LeafletCompatibility />
       <div className="w-screen h-screen flex relative">
         <div id="map" className="flex-grow">
           <MapContainer

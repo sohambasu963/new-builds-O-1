@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: "Apple Garamond";
   src:
     url("/fonts/AppleGaramond-Regular.woff2") format("woff2"),
@@ -6,9 +6,9 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-}
+} */
 
-@font-face {
+/* @font-face {
   font-family: "Instrument Sans";
   src:
     url("/fonts/InstrumentSans-Regular.woff2") format("woff2"),
@@ -16,7 +16,7 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-}
+} */
 
 @tailwind base;
 @tailwind components;
