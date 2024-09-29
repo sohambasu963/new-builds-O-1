@@ -5,10 +5,18 @@ import { processPeopleImages } from "../../components/people-processor";
 import AudioToggle from "@/components/AudioToggle";
 import "./people.css";
 
+interface Person {
+  image: string,
+  title: string,
+  year: string,
+  month: string
+}
 
 export default function PeoplePage() {
   const router = useRouter();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Person[]>([]);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [response, setResponse] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAudioOn, setIsAudioOn] = useState(false);
@@ -47,6 +55,50 @@ export default function PeoplePage() {
   // };
 
   useEffect(() => {
+    const fetchStream = async () => {
+        try {
+            const payload = {
+                data: selectedPerson
+            };
+
+            const res = await fetch('/api/stream', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+
+            const reader = res.body?.getReader();
+            const decoder = new TextDecoder();
+            let completeResponse = '';
+
+            while (true) {
+                const { done, value } = await reader?.read() ?? { done: true };
+                if (done) break;
+                completeResponse += decoder.decode(value);
+            }
+
+            const parsedResponse = JSON.parse(completeResponse);
+            setResponse(parsedResponse.summary);
+
+        } catch (error) {
+            console.error('Error while fetching the stream:', error);
+        }
+    };
+
+    fetchStream();
+
+    return () => {
+        setResponse('');
+    };
+}, [selectedPerson]);
+
+  useEffect(() => {
     const fetchRandomImage = async () => {
       setIsLoading(true);
       setError(null);
@@ -57,7 +109,6 @@ export default function PeoplePage() {
         }
         const result = await response.json();
         const processedData = processPeopleImages(result.data);
-        console.log(processedData);
         setData(processedData);
 
         // Run the animation while images are loading
@@ -114,8 +165,8 @@ export default function PeoplePage() {
   return (
     <div className="w-screen flex flex-col">
       <div className="background-gradient"></div>
-    <header className="fixed top-4 left-4 z-[1000]">
-      <h1 className="text-[40px] text-[#1E1E1E] font-apple-garamond">
+    <header className="fixed top-8 left-8 z-[1000]">
+      <h1 className="text-7xl text-[#1E1E1E] font-apple-garamond">
         Meet the Shawties of <br /> <i>TORONTO</i></h1>
     </header>
 
@@ -127,11 +178,38 @@ export default function PeoplePage() {
             className="card"
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
+            onClick={() => setSelectedPerson(person)}
           >
             <img src={person.image} alt={`img${index + 1}`} />
           </div>
         ))}
       </div>
+    
+    {/* Image Modal */}
+    {selectedPerson && (
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[2000]" 
+        onClick={() => setSelectedPerson(null)}
+      >
+        <div 
+          className="rounded-lg p-8 max-w-6xl w-10/12 max-h-[92vh] flex flex-row items-start"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="w-3/5 pr-2">
+            <img 
+              src={selectedPerson.image} 
+              alt="Selected" 
+              className="max-w-full max-h-[85vh] object-contain"
+            />
+          </div>
+          <div className="w-2/5 pl-2 text-white overflow-y-auto max-h-[85vh]">
+            <p className="font-apple-garamond text-lg">
+              {response ? response : 'Loading description...'}
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
 
       <div className="fixed bottom-4 left-4 z-[1001] flex items-center space-x-2"> 
         <button
