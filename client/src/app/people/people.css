@@ -1,0 +1,60 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html,
+  body {
+    width: 100vw;
+    height: 800vh;
+    overflow: auto;
+    background: linear-gradient(to right, #988D8A, #F2F0E1);
+  }
+  
+  .slider {
+    margin-top: 30px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg);
+    transform-style: preserve-3d;
+    transition: 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+    user-select: none;
+  }
+  
+  /* Run animation only when images are loading */
+  .run-animation {
+    animation: slide 5s forwards;
+  }
+  
+  .card {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    transform: rotateX(20deg) rotateY(-10deg) rotateZ(130deg);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: -300px 0px;
+    transition: 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  @keyframes slide {
+    0% {
+      transform: translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg);
+    }
+    50% {
+      transform: translate3d(-50%, -50%, 0) rotateX(360deg) rotateY(25deg) rotateZ(120deg);
+    }
+    100% {
+      transform: translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg);
+    }
+  }
+  

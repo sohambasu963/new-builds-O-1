@@ -1,31 +1,58 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { processPeopleImages } from "../../components/people-processor";
 import AudioToggle from "@/components/AudioToggle";
+import "./people.css";
 
-interface ProcessedData {
-  // Define the structure of your processed data here
-  id: string;
-  name: string;
-  // ... other properties
-}
 
 export default function PeoplePage() {
   const router = useRouter();
-  const [data, setData] = useState<ProcessedData[]>([]);
+  const searchParams = useSearchParams();
+  const location = searchParams.get("location") || "Toronto";
+  
+  const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isAudioOn, setIsAudioOn] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const handleNavigateToMap = () => {
-    router.push("/spaces");
+    router.push("/");
+  };
+
+  const handleScroll = () => {
+    const scrollPos = window.scrollY;
+    const slider = document.querySelector(".slider") as HTMLElement | null;
+
+    if (slider) {
+      const zOffset = scrollPos * 0.5; // Adjust scroll sensitivity if needed
+      requestAnimationFrame(() => {
+        slider.style.transform = `translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg) translateY(${zOffset}px)`;
+      });
+    }
+  };
+
+  const handleMouseOver = (e: any) => {
+    e.currentTarget.style.left = "15%";
+  };
+
+  const handleMouseOut = (e: any) => {
+    e.currentTarget.style.left = "0%";
+  };
+
+  const capitalizeWords = (str: string) => {
+    return str
+      .split(/[-\s]/)
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(str.includes('-') ? '-' : ' ');
   };
 
   useEffect(() => {
     const fetchRandomImage = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         const response = await fetch("/api/people");
         if (!response.ok) {
@@ -33,14 +60,26 @@ export default function PeoplePage() {
         }
         const result = await response.json();
         const processedData = processPeopleImages(result.data);
-        console.log(processedData);
         setData(processedData);
+
+        // Run the animation while images are loading
+        const slider = document.querySelector(".slider") as HTMLElement;
+        slider.classList.add("run-animation");
+
+        // Remove animation after 5 seconds
+        setTimeout(() => {
+          slider.classList.remove("run-animation");
+        }, 5000);
+      } catch (err: any) {
+        setError(err.message);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchRandomImage();
+
+    window.addEventListener("scroll", handleScroll);
 
     // Initialize audio context and element
     audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -57,6 +96,7 @@ export default function PeoplePage() {
         audioContextRef.current.close();
         audioContextRef.current = null;
       }
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -74,12 +114,26 @@ export default function PeoplePage() {
   }, [isAudioOn]);
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-white">
-      <header className="p-4 bg-gray-100">
-        <h1 className="text-2xl font-bold">Meet the People of Dupont Street</h1>
-      </header>
+    <div className="w-screen flex flex-col">
+    <header className="fixed top-4 left-4 z-[1000]">
+      <h1 className="text-2xl font-bold text-gray-300">Meet the People of {capitalizeWords(location!)}</h1>
+    </header>
 
-      <div className="absolute bottom-4 left-4 z-[1001] flex items-center space-x-2">
+    {/* Slider Section */}
+    <div className="slider">
+        {data.map((person, index) => (
+          <div
+            key={index}
+            className="card"
+            onMouseOver={handleMouseOver}
+            onMouseOut={handleMouseOut}
+          >
+            <img src={person.image} alt={`img${index + 1}`} />
+          </div>
+        ))}
+      </div>
+
+      <div className="fixed bottom-4 left-4 z-[1001] flex items-center space-x-2"> 
         <button
           onClick={handleNavigateToMap}
           className="bg-[#F2F0E1] text-black text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-[#e6e4d5] transition-colors duration-200"
