@@ -1,4 +1,4 @@
-// fetch from 10,000+ images of people -> every time you reload you will get a new memory made by a person. 
+// fetch from 10,000+ images of people -> every time you reload you will get a new memory made by a person.
 // the memories in toronto are so rich in culture and history.
 
 // connecting new with old, because we create an instagram like experience if people from then could share pictures
@@ -15,7 +15,7 @@ export async function GET() {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   // Parse the JSON data
