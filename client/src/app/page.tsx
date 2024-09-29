@@ -286,13 +286,14 @@ const MapContent = () => {
         )}
 
         <div className="absolute bottom-4 left-4 z-[1001] flex items-center space-x-2">
-          <button
-            onClick={handleNavigateToPeople}
+          <a
+            href="/people"
+            // onClick={handleNavigateToPeople}
             className="bg-black text-[#F2F0E1] text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-gray-900 transition-colors duration-200"
             aria-label="Switch to people spaces view"
           >
             People
-          </button>
+          </a>
           <AudioToggle
             isAudioOn={isAudioOn}
             toggleAudio={toggleAudio}

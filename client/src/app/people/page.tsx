@@ -24,7 +24,7 @@ export default function PeoplePage() {
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const handleNavigateToMap = () => {
-    router.push("/");
+    router.push("/spaces");
   };
 
   const handleScroll = () => {
@@ -169,7 +169,7 @@ export default function PeoplePage() {
       <div className="background-gradient"></div>
       <header className="fixed top-8 left-8 z-[1000]">
         <h1 className="text-7xl text-[#1E1E1E] font-apple-garamond">
-          Meet the Shawties of <br /> <i>TORONTO</i>
+          Meet the <b>Mandem</b> of <br /> <i>TORONTO</i>
         </h1>
       </header>
 
@@ -207,7 +207,7 @@ export default function PeoplePage() {
             </div>
             <div className="w-2/5 pl-2 text-white overflow-y-auto max-h-[85vh]">
               <p className="font-apple-garamond text-lg">
-                {response ? response : "Loading description..."}
+                {response ? response : "Loading memory..."}
               </p>
             </div>
           </div>
@@ -215,13 +215,14 @@ export default function PeoplePage() {
       )}
 
       <div className="fixed bottom-4 left-4 z-[1001] flex items-center space-x-2">
-        <button
-          onClick={handleNavigateToMap}
+        <a
+          // onClick={handleNavigateToMap}
+          href="/"
           className="bg-[#F2F0E1] text-black text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-[#e6e4d5] transition-colors duration-200"
           aria-label="Switch to map view"
         >
           Spaces
-        </button>
+        </a>
         <AudioToggle
           isAudioOn={isAudioOn}
           toggleAudio={toggleAudio}
