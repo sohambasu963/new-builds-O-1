@@ -102,7 +102,7 @@ const MapContent = () => {
         console.log("Error:", error);
       } else {
         const processedData = processSupabaseData(data);
-        console.log(processedData);
+        // console.log(processedData);
         setLocations(processedData);
 
         const locationParam = searchParams.get("location");
