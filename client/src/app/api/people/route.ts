@@ -24,7 +24,7 @@ export async function GET() {
   // Check if the results array exists and has data
   if (data.count > 0 && data.results.length > 0) {
     const totalResults = data.results.length;
-    const numberOfImagesToFetch = Math.min(10, totalResults);
+    const numberOfImagesToFetch = Math.min(75, totalResults);
     const randomImages = [];
 
     // Create a copy of the results array to avoid modifying the original

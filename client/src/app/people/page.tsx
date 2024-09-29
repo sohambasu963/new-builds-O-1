@@ -60,6 +60,7 @@ export default function PeoplePage() {
         }
         const result = await response.json();
         const processedData = processPeopleImages(result.data);
+        console.log(processedData);
         setData(processedData);
 
         // Run the animation while images are loading
@@ -115,6 +116,7 @@ export default function PeoplePage() {
 
   return (
     <div className="w-screen flex flex-col">
+      <div className="background-gradient"></div>
     <header className="fixed top-4 left-4 z-[1000]">
       <h1 className="text-[40px] text-[#F2F0E1] font-apple-garamond">
         Meet the People of {capitalizeWords(location!)}</h1>

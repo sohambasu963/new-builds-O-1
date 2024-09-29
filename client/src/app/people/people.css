@@ -11,6 +11,16 @@
     overflow: auto;
     background: linear-gradient(to right, #988D8A, #F2F0E1);
   }
+
+  .background-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, #988D8A, #F2F0E1);
+    z-index: -1;
+  }
   
   .slider {
     margin-top: 30px;
