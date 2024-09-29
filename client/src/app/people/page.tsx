@@ -5,16 +5,21 @@ import { processPeopleImages } from "../../components/people-processor";
 import AudioToggle from "@/components/AudioToggle";
 import "./people.css";
 
+interface PersonData {
+  image: string;
+  // Add other properties as needed
+}
 
 export default function PeoplePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const location = searchParams.get("location") || "Toronto";
   
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<PersonData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAudioOn, setIsAudioOn] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -47,6 +52,14 @@ export default function PeoplePage() {
       .split(/[-\s]/)
       .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(str.includes('-') ? '-' : ' ');
+  };
+
+  const handleImageClick = (image: string) => {
+    setSelectedImage(image);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedImage(null);
   };
 
   useEffect(() => {
@@ -115,24 +128,34 @@ export default function PeoplePage() {
 
   return (
     <div className="w-screen flex flex-col">
-    <header className="fixed top-4 left-4 z-[1000]">
-      <h1 className="text-[40px] text-[#F2F0E1] font-apple-garamond">
-        Meet the People of {capitalizeWords(location!)}</h1>
-    </header>
+      <header className="fixed top-4 left-4 z-[1000]">
+        <h1 className="text-[40px] text-[#F2F0E1] font-apple-garamond">
+          Meet the People of {capitalizeWords(location!)}</h1>
+      </header>
 
-    {/* Slider Section */}
-    <div className="slider">
+      {/* Slider Section */}
+      <div className="slider">
         {data.map((person, index) => (
           <div
             key={index}
             className="card"
-            onMouseOver={handleMouseOver}
-            onMouseOut={handleMouseOut}
+            onMouseOver={(e) => e.currentTarget.style.left = "15%"}
+            onMouseOut={(e) => e.currentTarget.style.left = "0%"}
+            onClick={() => handleImageClick(person.image)}
           >
             <img src={person.image} alt={`img${index + 1}`} />
           </div>
         ))}
       </div>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[2000]" onClick={handleCloseModal}>
+          <div className="max-w-4xl max-h-4xl" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Selected" className="max-w-full max-h-full object-contain" />
+          </div>
+        </div>
+      )}
 
       <div className="fixed bottom-4 left-4 z-[1001] flex items-center space-x-2"> 
         <button
