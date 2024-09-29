@@ -9,7 +9,6 @@ export default function PeoplePage() {
   const searchParams = useSearchParams();
   const location = searchParams.get("location");
 
-
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,12 +22,13 @@ export default function PeoplePage() {
     const slider = document.querySelector(".slider") as HTMLElement | null;
 
     if (slider) {
-      const initialTransform = `translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg)`;
-      const zOffset = scrollPos * 0.5;
-      slider.style.transform = `${initialTransform} translateY(${zOffset}px)`;
+      const zOffset = scrollPos * 0.5; // Adjust scroll sensitivity if needed
+      requestAnimationFrame(() => {
+        slider.style.transform = `translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg) translateY(${zOffset}px)`;
+      });
     }
   };
-1
+
   const handleMouseOver = (e: any) => {
     e.currentTarget.style.left = "15%";
   };
@@ -39,9 +39,9 @@ export default function PeoplePage() {
 
   const capitalizeWords = (str: string) => {
     return str
-      .split(/[-\s]/) // Split by spaces or hyphens
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
-      .join(str.includes('-') ? '-' : ' '); // Rejoin with the original delimiter
+      .split(/[-\s]/)
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(str.includes('-') ? '-' : ' ');
   };
 
   useEffect(() => {
@@ -55,8 +55,16 @@ export default function PeoplePage() {
         }
         const result = await response.json();
         const processedData = processPeopleImages(result.data);
-        console.log(processedData);
         setData(processedData);
+
+        // Run the animation while images are loading
+        const slider = document.querySelector(".slider") as HTMLElement;
+        slider.classList.add("run-animation");
+
+        // Remove animation after 5 seconds
+        setTimeout(() => {
+          slider.classList.remove("run-animation");
+        }, 5000);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -65,6 +73,8 @@ export default function PeoplePage() {
     };
 
     fetchRandomImage();
+
+    // Add scroll event listener after images load
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -72,8 +82,7 @@ export default function PeoplePage() {
   return (
     <div className="w-screen flex flex-col">
       <header className="fixed top-4 left-4 z-[1000]">
-        <h1 className="text-2xl font-bold">Meet the People of {capitalizeWords(location!)}</h1>
-        {/* <h1 className="text-2xl font-bold">Meet the People of Location</h1> */}
+        <h1 className="text-2xl font-bold text-gray-300">Meet the People of {capitalizeWords(location!)}</h1>
       </header>
 
       {/* Slider Section */}
@@ -98,9 +107,8 @@ export default function PeoplePage() {
         >
           Spaces
         </button>
-      </div> 
+      </div>
 
-      {/* Loading and error states */}
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
     </div>
