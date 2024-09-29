@@ -16,7 +16,7 @@ export default function PeoplePage() {
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const handleNavigateToMap = () => {
-    router.push("/");
+    router.push("/spaces");
   };
 
   const handleScroll = () => {
@@ -115,8 +115,8 @@ export default function PeoplePage() {
     <div className="w-screen flex flex-col">
       <div className="background-gradient"></div>
     <header className="fixed top-4 left-4 z-[1000]">
-      <h1 className="text-[40px] text-[#F2F0E1] font-apple-garamond">
-        Meet the People of <i>TORONTO</i></h1>
+      <h1 className="text-[40px] text-[#1E1E1E] font-apple-garamond">
+        Meet the Shawties of <br /> <i>TORONTO</i></h1>
     </header>
 
     {/* Slider Section */}
