@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { processPeopleImages } from "../components/people-processor";
+import { processPeopleImages } from "../../components/people-processor";
 
 export default function PeoplePage() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function PeoplePage() {
         const processedData = processPeopleImages(result.data);
         console.log(processedData);
         setData(processedData);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       } finally {
         setIsLoading(false);
