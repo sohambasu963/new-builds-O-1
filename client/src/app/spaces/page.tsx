@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { Map as LeafletMap } from "leaflet";
 import { MapContainerProps, useMapEvents } from "react-leaflet";
@@ -13,9 +13,9 @@ import MarkerShadow from "../../../public/images/marker-shadow.png";
 import Overlay from "../components/overlay";
 import OldOverlay from "../components/old-overlay";
 import { supabase } from "../supabaseClient.js";
-import { processSupabaseData } from "../components/processor"
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { processSupabaseData } from "../components/processor";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const MapContainer = dynamic<MapContainerProps>(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -53,20 +53,29 @@ function MapEvents({
 export default function MapPage() {
   const centerPoint: [number, number] = [43.668522, -79.399061];
   const mapRef = useRef<LeafletMap | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
   );
 
   const [locations, setLocations] = useState<any[] | null>([
     {
-        id: "1",
-        name: "CN Tower",
-        images: [{url: '/images/cn-tower.jpeg', month: 'January', year: '2000', description: "CN Tower"}],
-        description:
-          "A 553.3 m-high concrete communications and observation tower in downtown Toronto, Ontario, Canada.",
-        coordinates: [43.6426, -79.3871],
-        date: "May",
-        year: "2023"
+      id: "1",
+      name: "CN Tower",
+      images: [
+        {
+          url: "/images/cn-tower.jpeg",
+          month: "January",
+          year: "2000",
+          description: "CN Tower",
+        },
+      ],
+      description:
+        "A 553.3 m-high concrete communications and observation tower in downtown Toronto, Ontario, Canada.",
+      coordinates: [43.6426, -79.3871],
+      date: "May",
+      year: "2023",
     },
   ]);
 
@@ -78,14 +87,36 @@ export default function MapPage() {
         console.log("Error:", error);
       } else {
         const processedData = processSupabaseData(data);
-        // console.log(data);
-        console.log(processedData);
         setLocations(processedData);
+
+        const locationParam = searchParams.get('location');
+        if (locationParam) {
+          const matchingLocation = processedData.find(loc => loc.id === locationParam);
+          if (matchingLocation) {
+            setSelectedLocation({
+              ...matchingLocation,
+              coordinates: matchingLocation.coordinates as [number, number],
+            });
+          }
+        }
       }
     }
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const locationParam = searchParams.get('location');
+    if (locationParam && locations) {
+      const matchingLocation = locations.find(loc => loc.id === locationParam);
+      if (matchingLocation) {
+        setSelectedLocation({
+          ...matchingLocation,
+          coordinates: matchingLocation.coordinates as [number, number],
+        });
+      }
+    }
+  }, [searchParams, locations]);
 
   const defaultIcon = L.icon({
     iconUrl:
@@ -98,16 +129,28 @@ export default function MapPage() {
     popupAnchor: [1, -34],
   });
 
-  const handleMarkerClick = (location: Location) => {
-    setSelectedLocation(location);
-  };
-
   const [isToggled, setIsToggled] = useState(false);
-  const router = useRouter();
+
 
   const handleNavigateToPeople = () => {
-    router.push('/people');
+    if (selectedLocation) {
+      router.push(`/people?location=${selectedLocation.id}`);
+    } else {
+      router.push("/people");
+    }
   };
+
+  const handleMarkerClick = useCallback((location: Location) => {
+    setSelectedLocation({
+      ...location,
+      coordinates: location.coordinates as [number, number],
+    });
+
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('location', location.id);
+    router.push(`?${newSearchParams.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
 
   return (
     <>
@@ -127,24 +170,29 @@ export default function MapPage() {
             style={{ height: "100%", width: "100%" }}
           >
             <TileLayer
-              url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"o g
+              url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+              o
+              g
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
 
             <MapEvents setSelectedLocation={setSelectedLocation} />
 
-            {locations.map((location) => (
+            {locations && locations.map((location) => (
               <Marker
                 key={location.id}
                 position={location.coordinates}
                 icon={defaultIcon}
+                // eventHandlers={{
+                //   click: () =>
+                //     setSelectedLocation({
+                //       ...location,
+                //       coordinates: location.coordinates as [number, number],
+                //     }),
+                // }}
                 eventHandlers={{
-                  click: () =>
-                    setSelectedLocation({
-                      ...location,
-                      coordinates: location.coordinates as [number, number],
-                    }),
-                }}
+                    click: () => handleMarkerClick(location),
+                  }}
               />
             ))}
           </MapContainer>
@@ -160,10 +208,10 @@ export default function MapPage() {
         <div className="absolute bottom-4 left-4 z-[1001]">
           <button
             onClick={handleNavigateToPeople}
-            className="bg-[#31574A] text-white text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-[#3e6b5c] transition-colors duration-200"
+            className="bg-black text-[#F2F0E1] text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-gray-900 transition-colors duration-200"
             aria-label="Switch to people spaces view"
           >
-            People Spaces
+            People
           </button>
         </div>
       </div>
