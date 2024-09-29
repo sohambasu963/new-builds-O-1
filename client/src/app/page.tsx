@@ -1,28 +1,32 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import dynamic from "next/dynamic";
-import { Map as LeafletMap } from "leaflet";
-import { MapContainerProps, useMapEvents } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
-import * as L from "leaflet";
-import "leaflet-defaulticon-compatibility";
-import { Marker, TileLayer } from "react-leaflet";
 import MarkerShadow from "../../public/images/marker-shadow.png";
-// import { locations } from "./locations";
 import Overlay from "@/components/overlay";
-import OldOverlay from "@/components/old-overlay";
 import { supabase } from "@/functions/supabaseClient.js";
 import { processSupabaseData } from "@/components/processor";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Volume2, VolumeX } from "lucide-react"; // Import audio icons
 import AudioToggle from "@/components/AudioToggle";
+
+// Leaflet Imports
+// import { Map as LeafletMap } from "leaflet";
+import { MapContainerProps, useMapEvents } from "react-leaflet";
+// import "leaflet/dist/leaflet.css";
+// import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
+// import "leaflet-defaulticon-compatibility";
+// import { Marker, TileLayer } from "react-leaflet";
 
 const MapContainer = dynamic<MapContainerProps>(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false },
+  { ssr: false }
 );
+
+const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), {
+  ssr: false,
+});
+const Marker = dynamic(() => import("react-leaflet").then((mod) => mod.Marker), {
+  ssr: false,
+});
 
 const LeafletCSS = () => {
   useEffect(() => {
@@ -52,13 +56,20 @@ function MapEvents({
   return null;
 }
 
-export default function MapPage() {
+export default function SpacesPage() {
+  return (
+    <Suspense fallback={<div>Loading map...</div>}>
+      <MapContent />
+    </Suspense>
+  );
+}
+
+const MapContent = () => {
   const centerPoint: [number, number] = [43.668522, -79.399061];
-  const mapRef = useRef<LeafletMap | null>(null);
+  // const mapRef = useRef<LeafletMap | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedLocation, setSelectedLocation] = useState<any | null>(null);
-
   const [locations, setLocations] = useState<any[] | null>([
     {
       id: "1",
@@ -79,6 +90,12 @@ export default function MapPage() {
     },
   ]);
 
+  const [isAudioOn, setIsAudioOn] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const clickSound1Ref = useRef<HTMLAudioElement | null>(null);
+  const clickSound2Ref = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
     async function fetchData() {
       const { data, error } = await supabase.from("neighbourhoods").select("*");
@@ -93,7 +110,7 @@ export default function MapPage() {
         const locationParam = searchParams.get("location");
         if (locationParam) {
           const matchingLocation = processedData.find(
-            (loc) => loc.id === locationParam,
+            (loc) => loc.id === locationParam
           );
           if (matchingLocation) {
             setSelectedLocation({
@@ -106,49 +123,18 @@ export default function MapPage() {
     }
 
     fetchData();
-  }, []);
-
-  // useEffect(() => {
-  //   const locationParam = searchParams.get('location');
-  //   if (locationParam && locations) {
-  //     const matchingLocation = locations.find(loc => loc.id === locationParam);
-  //     if (matchingLocation) {
-  //       setSelectedLocation({
-  //         ...matchingLocation,
-  //         coordinates: matchingLocation.coordinates as [number, number],
-  //       });
-  //     }
-  //   }
-  // }, [searchParams, locations]);
-
-  const defaultIcon = L.icon({
-    iconUrl:
-      "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-    shadowUrl: MarkerShadow.src,
-    iconSize: [25, 41],
-    shadowSize: [41, 41],
-    iconAnchor: [12, 41],
-    shadowAnchor: [13, 41],
-    popupAnchor: [1, -34],
-  });
-
-  const [isToggled, setIsToggled] = useState(false);
-  const [isAudioOn, setIsAudioOn] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const clickSoundRef = useRef<HTMLAudioElement | null>(null);
-  const clickSound1Ref = useRef<HTMLAudioElement | null>(null);
-  const clickSound2Ref = useRef<HTMLAudioElement | null>(null);
+  }, [searchParams]);
 
   useEffect(() => {
-    // Initialize audio context and element
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    audioRef.current = new Audio('/audio/background-music.mp3'); // Updated path
-    audioRef.current.loop = true; // If you want the audio to loop
+    // Initialize audio context and elements
+    if (typeof window !== "undefined") {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioRef.current = new Audio('/audio/background-music.mp3');
+      audioRef.current.loop = true;
 
-    // Initialize click sounds
-    clickSound1Ref.current = new Audio('/audio/click-sound.mp3');
-    clickSound2Ref.current = new Audio('/audio/click-sound2.mp3');
+      clickSound1Ref.current = new Audio('/audio/click-sound.mp3');
+      clickSound2Ref.current = new Audio('/audio/click-sound2.mp3');
+    }
 
     return () => {
       // Cleanup
@@ -159,9 +145,6 @@ export default function MapPage() {
       if (audioContextRef.current) {
         audioContextRef.current.close();
         audioContextRef.current = null;
-      }
-      if (clickSoundRef.current) {
-        clickSoundRef.current = null;
       }
       if (clickSound1Ref.current) {
         clickSound1Ref.current = null;
@@ -175,7 +158,7 @@ export default function MapPage() {
   const playClickSound = useCallback(() => {
     const randomSound = Math.random() < 0.5 ? clickSound1Ref.current : clickSound2Ref.current;
     if (randomSound) {
-      randomSound.currentTime = 0; // Reset to start
+      randomSound.currentTime = 0;
       randomSound.play().catch(error => console.error("Error playing click sound:", error));
     }
   }, []);
@@ -190,17 +173,17 @@ export default function MapPage() {
 
   const handleMarkerClick = useCallback(
     (location: Location) => {
-      playClickSound(); // Play click sound
+      playClickSound();
       setSelectedLocation({
         ...location,
         coordinates: location.coordinates as [number, number],
       });
 
-      const newSearchParams = new URLSearchParams(searchParams);
+      const newSearchParams = new URLSearchParams(searchParams.toString());
       newSearchParams.set("location", location.id);
       router.push(`?${newSearchParams.toString()}`, { scroll: false });
     },
-    [router, searchParams, playClickSound],
+    [router, searchParams, playClickSound]
   );
 
   const toggleAudio = useCallback(() => {
@@ -215,6 +198,27 @@ export default function MapPage() {
       setIsAudioOn(!isAudioOn);
     }
   }, [isAudioOn]);
+
+  const [L, setL] = useState<any>(null);
+
+  useEffect(() => {
+    import("leaflet").then((L) => {
+      setL(L);
+    });
+  }, []);
+
+  const defaultIcon = L
+    ? L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+        shadowUrl: MarkerShadow.src,
+        iconSize: [25, 41],
+        shadowSize: [41, 41],
+        iconAnchor: [12, 41],
+        shadowAnchor: [13, 41],
+        popupAnchor: [1, -34],
+      })
+    : null;
 
   return (
     <>

@@ -57,9 +57,11 @@ function MapEvents({
 }
 
 export default function SpacesPage() {
-  <Suspense fallback={<div>Loading map...</div>}>
-    <MapContent />
-  </Suspense>
+  return (
+    <Suspense fallback={<div>Loading map...</div>}>
+      <MapContent />
+    </Suspense>
+  );
 }
 
 const MapContent = () => {
