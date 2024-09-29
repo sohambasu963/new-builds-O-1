@@ -16,6 +16,8 @@ import { supabase } from "@/functions/supabaseClient.js";
 import { processSupabaseData } from "@/components/processor";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Volume2, VolumeX } from "lucide-react"; // Import audio icons
+import AudioToggle from "@/components/AudioToggle";
 
 const MapContainer = dynamic<MapContainerProps>(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -131,6 +133,28 @@ export default function MapPage() {
   });
 
   const [isToggled, setIsToggled] = useState(false);
+  const [isAudioOn, setIsAudioOn] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    // Initialize audio context and element
+    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioRef.current = new Audio('/audio/background-music.mp3'); // Updated path
+    audioRef.current.loop = true; // If you want the audio to loop
+
+    return () => {
+      // Cleanup
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+    };
+  }, []);
 
   const handleNavigateToPeople = () => {
     if (selectedLocation) {
@@ -153,6 +177,19 @@ export default function MapPage() {
     },
     [router, searchParams],
   );
+
+  const toggleAudio = useCallback(() => {
+    if (audioRef.current && audioContextRef.current) {
+      if (isAudioOn) {
+        audioRef.current.pause();
+      } else {
+        audioContextRef.current.resume().then(() => {
+          audioRef.current?.play();
+        });
+      }
+      setIsAudioOn(!isAudioOn);
+    }
+  }, [isAudioOn]);
 
   return (
     <>
@@ -206,7 +243,7 @@ export default function MapPage() {
           />
         )}
 
-        <div className="absolute bottom-4 left-4 z-[1001]">
+        <div className="absolute bottom-4 left-4 z-[1001] flex items-center space-x-2">
           <button
             onClick={handleNavigateToPeople}
             className="bg-black text-[#F2F0E1] text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-gray-900 transition-colors duration-200"
@@ -214,6 +251,11 @@ export default function MapPage() {
           >
             People
           </button>
+          <AudioToggle 
+            isAudioOn={isAudioOn} 
+            toggleAudio={toggleAudio} 
+            className="bg-black text-[#F2F0E1] hover:bg-gray-900"
+          />
         </div>
       </div>
     </>
