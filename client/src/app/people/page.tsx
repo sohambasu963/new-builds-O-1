@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { processPeopleImages } from "../../components/people-processor";
+import "./people.css";
 
 export default function PeoplePage() {
   const router = useRouter();
@@ -11,6 +12,25 @@ export default function PeoplePage() {
 
   const handleNavigateToMap = () => {
     router.push("/spaces");
+  };
+
+  const handleScroll = () => {
+    const scrollPos = window.scrollY;
+    const slider = document.querySelector(".slider") as HTMLElement | null;
+
+    if (slider) {
+      const initialTransform = `translate3d(-50%, -50%, 0) rotateX(0deg) rotateY(-25deg) rotateZ(-120deg)`;
+      const zOffset = scrollPos * 0.5;
+      slider.style.transform = `${initialTransform} translateY(${zOffset}px)`;
+    }
+  };
+
+  const handleMouseOver = (e: any) => {
+    e.currentTarget.style.left = "15%";
+  };
+
+  const handleMouseOut = (e: any) => {
+    e.currentTarget.style.left = "0%";
   };
 
   useEffect(() => {
@@ -34,6 +54,8 @@ export default function PeoplePage() {
     };
 
     fetchRandomImage();
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -41,6 +63,20 @@ export default function PeoplePage() {
       <header className="p-4 bg-gray-100">
         <h1 className="text-2xl font-bold">Meet the People of Dupont Street</h1>
       </header>
+
+      {/* Slider Section */}
+      <div className="slider">
+        {data.map((person, index) => (
+          <div
+            key={index}
+            className="card"
+            onMouseOver={handleMouseOver}
+            onMouseOut={handleMouseOut}
+          >
+            <img src={person.image} alt={`img${index + 1}`} />
+          </div>
+        ))}
+      </div>
 
       <div className="absolute bottom-4 left-4 z-[1001]">
         <button
@@ -51,6 +87,10 @@ export default function PeoplePage() {
           Spaces
         </button>
       </div>
+
+      {/* Loading and error states */}
+      {isLoading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
     </div>
   );
 }
