@@ -85,11 +85,14 @@ export default function MapPage() {
         console.log("Error:", error);
       } else {
         const processedData = processSupabaseData(data);
+        console.log(processedData);
         setLocations(processedData);
 
-        const locationParam = searchParams.get('location');
+        const locationParam = searchParams.get("location");
         if (locationParam) {
-          const matchingLocation = processedData.find(loc => loc.id === locationParam);
+          const matchingLocation = processedData.find(
+            (loc) => loc.id === locationParam,
+          );
           if (matchingLocation) {
             setSelectedLocation({
               ...matchingLocation,
@@ -103,18 +106,18 @@ export default function MapPage() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const locationParam = searchParams.get('location');
-    if (locationParam && locations) {
-      const matchingLocation = locations.find(loc => loc.id === locationParam);
-      if (matchingLocation) {
-        setSelectedLocation({
-          ...matchingLocation,
-          coordinates: matchingLocation.coordinates as [number, number],
-        });
-      }
-    }
-  }, [searchParams, locations]);
+  // useEffect(() => {
+  //   const locationParam = searchParams.get('location');
+  //   if (locationParam && locations) {
+  //     const matchingLocation = locations.find(loc => loc.id === locationParam);
+  //     if (matchingLocation) {
+  //       setSelectedLocation({
+  //         ...matchingLocation,
+  //         coordinates: matchingLocation.coordinates as [number, number],
+  //       });
+  //     }
+  //   }
+  // }, [searchParams, locations]);
 
   const defaultIcon = L.icon({
     iconUrl:
@@ -129,7 +132,6 @@ export default function MapPage() {
 
   const [isToggled, setIsToggled] = useState(false);
 
-
   const handleNavigateToPeople = () => {
     if (selectedLocation) {
       router.push(`/people?location=${selectedLocation.id}`);
@@ -138,17 +140,19 @@ export default function MapPage() {
     }
   };
 
-  const handleMarkerClick = useCallback((location: Location) => {
-    setSelectedLocation({
-      ...location,
-      coordinates: location.coordinates as [number, number],
-    });
+  const handleMarkerClick = useCallback(
+    (location: Location) => {
+      setSelectedLocation({
+        ...location,
+        coordinates: location.coordinates as [number, number],
+      });
 
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set('location', location.id);
-    router.push(`?${newSearchParams.toString()}`, { scroll: false });
-  }, [router, searchParams]);
-
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set("location", location.id);
+      router.push(`?${newSearchParams.toString()}`, { scroll: false });
+    },
+    [router, searchParams],
+  );
 
   return (
     <>
@@ -174,23 +178,24 @@ export default function MapPage() {
 
             <MapEvents setSelectedLocation={setSelectedLocation} />
 
-            {locations && locations.map((location) => (
-              <Marker
-                key={location.id}
-                position={location.coordinates}
-                icon={defaultIcon}
-                // eventHandlers={{
-                //   click: () =>
-                //     setSelectedLocation({
-                //       ...location,
-                //       coordinates: location.coordinates as [number, number],
-                //     }),
-                // }}
-                eventHandlers={{
-                  click: () => handleMarkerClick(location),
-                }}
-              />
-            ))}
+            {locations &&
+              locations.map((location) => (
+                <Marker
+                  key={location.id}
+                  position={location.coordinates}
+                  icon={defaultIcon}
+                  // eventHandlers={{
+                  //   click: () =>
+                  //     setSelectedLocation({
+                  //       ...location,
+                  //       coordinates: location.coordinates as [number, number],
+                  //     }),
+                  // }}
+                  eventHandlers={{
+                    click: () => handleMarkerClick(location),
+                  }}
+                />
+              ))}
           </MapContainer>
         </div>
 

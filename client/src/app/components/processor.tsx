@@ -9,7 +9,13 @@ export function processSupabaseData(dataArray: any[]): any[] {
         year: string;
         description: string;
       }>,
-      description: "This is a sample description",
+      bio: {
+        description: data.bio?.description || "",
+        funFact: getRandomItems(data.bio?.fun_facts, 1)[0] || "",
+        question: getRandomItems(data.bio?.interactive_questions, 1)[0] || "",
+        name: data.bio?.name || "",
+        stories: data.bio?.stories || "",
+      },
       coordinates: data.geo_coords ? parseCoordinates(data.geo_coords) : null,
     };
 

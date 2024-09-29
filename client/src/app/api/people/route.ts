@@ -1,4 +1,4 @@
-// fetch from 10,000+ images of people -> every time you reload you will get a new memory made by a person. 
+// fetch from 10,000+ images of people -> every time you reload you will get a new memory made by a person.
 // the memories in toronto are so rich in culture and history.
 
 // connecting new with old, because we create an instagram like experience if people from then could share pictures
@@ -15,7 +15,7 @@ export async function GET() {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   // Parse the JSON data
@@ -23,12 +23,31 @@ export async function GET() {
 
   // Check if the results array exists and has data
   if (data.count > 0 && data.results.length > 0) {
-    // Randomly select an object from the results array
-    const randomIndex = Math.floor(Math.random() * data.results.length);
-    const randomObject = data.results[randomIndex];
+    const totalResults = data.results.length;
+    const numberOfImagesToFetch = Math.min(10, totalResults);
+    const randomImages = [];
 
-    // Return the random object as a JSON response
-    return new Response(JSON.stringify({ data: randomObject }), {
+    // Create a copy of the results array to avoid modifying the original
+    const availableResults = [...data.results];
+
+    for (let i = 0; i < numberOfImagesToFetch; i++) {
+      // Randomly select an object from the available results
+      const randomIndex = Math.floor(Math.random() * availableResults.length);
+      const randomObject = availableResults.splice(randomIndex, 1)[0];
+
+      // Process the random object
+      const processedImage = {
+        primaryMaker: randomObject.primaryMaker,
+        primaryMedia: randomObject.primaryMedia,
+        title: randomObject.title,
+        date: randomObject.date || getRandomDate(1955, 1986),
+      };
+
+      randomImages.push(processedImage);
+    }
+
+    // Return the random objects as a JSON response
+    return new Response(JSON.stringify({ data: randomImages }), {
       headers: { "Content-Type": "application/json" },
     });
   } else {
@@ -38,4 +57,12 @@ export async function GET() {
       status: 404,
     });
   }
+}
+
+// Helper function to generate a random date between two years
+function getRandomDate(start: number, end: number) {
+  const year = Math.floor(Math.random() * (end - start + 1) + start);
+  const month = Math.floor(Math.random() * 12) + 1;
+  const day = Math.floor(Math.random() * 28) + 1; // Simplification: all months have 28 days
+  return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
 }
