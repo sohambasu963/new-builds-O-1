@@ -1,12 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { processPeopleImages } from "../../components/people-processor";
+import AudioToggle from "@/components/AudioToggle";
 
 export default function PeoplePage() {
   const router = useRouter();
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAudioOn, setIsAudioOn] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const handleNavigateToMap = () => {
     router.push("/spaces");
@@ -30,7 +34,37 @@ export default function PeoplePage() {
     };
 
     fetchRandomImage();
+
+    // Initialize audio context and element
+    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioRef.current = new Audio('/audio/background-music.mp3');
+    audioRef.current.loop = true;
+
+    return () => {
+      // Cleanup
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+    };
   }, []);
+
+  const toggleAudio = useCallback(() => {
+    if (audioRef.current && audioContextRef.current) {
+      if (isAudioOn) {
+        audioRef.current.pause();
+      } else {
+        audioContextRef.current.resume().then(() => {
+          audioRef.current?.play();
+        });
+      }
+      setIsAudioOn(!isAudioOn);
+    }
+  }, [isAudioOn]);
 
   return (
     <div className="w-screen h-screen flex flex-col bg-white">
@@ -38,7 +72,7 @@ export default function PeoplePage() {
         <h1 className="text-2xl font-bold">Meet the People of Dupont Street</h1>
       </header>
 
-      <div className="absolute bottom-4 left-4 z-[1001]">
+      <div className="absolute bottom-4 left-4 z-[1001] flex items-center space-x-2">
         <button
           onClick={handleNavigateToMap}
           className="bg-[#F2F0E1] text-black text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-[#e6e4d5] transition-colors duration-200"
@@ -46,6 +80,11 @@ export default function PeoplePage() {
         >
           Spaces
         </button>
+        <AudioToggle 
+          isAudioOn={isAudioOn} 
+          toggleAudio={toggleAudio} 
+          className="bg-[#F2F0E1] text-black hover:bg-[#e6e4d5]"
+        />
       </div>
     </div>
   );
