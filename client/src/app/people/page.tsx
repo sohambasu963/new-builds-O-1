@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { processPeopleImages } from "../../components/people-processor";
 import AudioToggle from "@/components/AudioToggle";
 import "./people.css";
@@ -8,9 +8,6 @@ import "./people.css";
 
 export default function PeoplePage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const location = searchParams.get("location") || "Toronto";
-  
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,12 +39,12 @@ export default function PeoplePage() {
     e.currentTarget.style.left = "0%";
   };
 
-  const capitalizeWords = (str: string) => {
-    return str
-      .split(/[-\s]/)
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(str.includes('-') ? '-' : ' ');
-  };
+  // const capitalizeWords = (str: string) => {
+  //   return str
+  //     .split(/[-\s]/)
+  //     .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+  //     .join(str.includes('-') ? '-' : ' ');
+  // };
 
   useEffect(() => {
     const fetchRandomImage = async () => {
@@ -119,7 +116,7 @@ export default function PeoplePage() {
       <div className="background-gradient"></div>
     <header className="fixed top-4 left-4 z-[1000]">
       <h1 className="text-[40px] text-[#F2F0E1] font-apple-garamond">
-        Meet the People of {capitalizeWords(location!)}</h1>
+        Meet the People of <i>TORONTO</i></h1>
     </header>
 
     {/* Slider Section */}
