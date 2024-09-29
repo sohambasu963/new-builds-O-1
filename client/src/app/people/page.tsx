@@ -7,7 +7,7 @@ import "./people.css";
 export default function PeoplePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const location = searchParams.get("location");
+  const location = searchParams.get("location") || "Toronto";
 
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
