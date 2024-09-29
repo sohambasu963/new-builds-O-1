@@ -1,23 +1,46 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { processPeopleImages } from "../components/people-processor";
 
 export default function PeoplePage() {
   const router = useRouter();
+  const [data, setData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleNavigateToMap = () => {
     router.push("/spaces");
   };
 
+  useEffect(() => {
+    const fetchRandomImage = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch("/api/people");
+        if (!response.ok) {
+          throw new Error("Failed to fetch random image");
+        }
+        const result = await response.json();
+        const processedData = processPeopleImages(result.data);
+        console.log(processedData);
+        setData(processedData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRandomImage();
+  }, []);
+
   return (
     <div className="w-screen h-screen flex flex-col bg-white">
       <header className="p-4 bg-gray-100">
-        <h1 className="text-2xl font-bold">People</h1>
+        <h1 className="text-2xl font-bold">Meet the People of Dupont Street</h1>
       </header>
-
-      <main className="flex-grow p-4">
-        {/* Content for the people spaces page will go here */}
-        <p>This is the people spaces page. Content to be added.</p>
-      </main>
 
       <div className="absolute bottom-4 left-4 z-[1001]">
         <button
