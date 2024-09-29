@@ -10,10 +10,10 @@ import "leaflet-defaulticon-compatibility";
 import { Marker, TileLayer } from "react-leaflet";
 import MarkerShadow from "../../../public/images/marker-shadow.png";
 // import { locations } from "./locations";
-import Overlay from "../components/overlay";
-import OldOverlay from "../components/old-overlay";
-import { supabase } from "../supabaseClient.js";
-import { processSupabaseData } from "../components/processor";
+import Overlay from "@/components/overlay";
+import OldOverlay from "@/components/old-overlay";
+import { supabase } from "@/functions/supabaseClient.js";
+import { processSupabaseData } from "@/components/processor";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
