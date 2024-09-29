@@ -192,25 +192,34 @@ def fetch_source_details(source_id):
         return None
 
 
-def insert_city_data(supabase: Client, city: str, combined_data: dict):
+def update_city_data(supabase: Client, city: str, bio_data: dict):
     """
-    Insert combined data into the Supabase table.
+    Update the bio data for an existing neighborhood in the Supabase table.
     """
     try:
-        # Define the table name where the data will be stored
+        # Define the table name where the data will be updated
         table_name = "neighbourhoods"
 
-        # Prepare the data to insert
-        data_to_insert = {
-            "name": city,
-            "street_data": combined_data,  # Store the combined result and detailed data as JSONB
+        # Prepare the data to update (in this case, updating the bio column)
+        data_to_update = {
+            "bio": bio_data  # Assuming you want to update the 'bio' field
         }
 
-        # Insert the data into the Supabase table
-        response = supabase.table(table_name).insert(data_to_insert).execute()
-        print(f"Data inserted successfully for {city}: {response}")
+        # Update the row where the 'name' matches the city
+        response = (
+            supabase.table(table_name).update(data_to_update).eq("name", city).execute()
+        )
+
+        # Check if the update was successful
+        if response.get("status_code", 200) == 200 and response.get("data"):
+            print(f"Data updated successfully for {city}: {response}")
+        else:
+            print(
+                f"Failed to update data for {city}: {response.get('error', 'Unknown error')}"
+            )
+
     except Exception as e:
-        print(f"Error inserting data for {city} into Supabase: {e}")
+        print(f"Error updating data for {city} in Supabase: {e}")
 
 
 def extract_year(display_date_value):
@@ -303,7 +312,7 @@ def insert_combined_data_to_supabase(
 
 if __name__ == "__main__":
     # Initialize Supabase connection
-    supabase = init_supabase()    
+    supabase = init_supabase()
     # Loop through all cities in the neighbourhoods list
     for city in neighbourhoods:
         print(f"Processing data for {city}...")
