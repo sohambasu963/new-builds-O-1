@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import dynamic from "next/dynamic";
 import MarkerShadow from "../../../public/images/marker-shadow.png";
 import Overlay from "@/components/overlay";
@@ -56,7 +56,13 @@ function MapEvents({
   return null;
 }
 
-export default function MapPage() {
+export default function SpacesPage() {
+  <Suspense fallback={<div>Loading map...</div>}>
+    <MapContent />
+  </Suspense>
+}
+
+const MapContent = () => {
   const centerPoint: [number, number] = [43.668522, -79.399061];
   // const mapRef = useRef<LeafletMap | null>(null);
   const router = useRouter();
