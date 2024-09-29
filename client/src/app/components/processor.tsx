@@ -17,7 +17,7 @@ export function processSupabaseData(dataArray: any[]): any[] {
       // Randomly select up to 5 results first
       const selectedResults = getRandomItems(data.street_data, 8);
 
-      result.images = selectedResults.map((item) => {
+      result.images = selectedResults.map((item: any) => {
         const url =
           item.primaryMedia && item.primaryMedia.value
             ? item.primaryMedia.value.replace("src: ", "")

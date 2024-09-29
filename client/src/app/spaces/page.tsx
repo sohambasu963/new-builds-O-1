@@ -32,7 +32,7 @@ const LeafletCSS = () => {
 interface Location {
   id: string;
   name: string;
-  coverImage: string;
+  coverImage?: string;
   description: string;
   coordinates: [number, number];
 }
@@ -55,9 +55,7 @@ export default function MapPage() {
   const mapRef = useRef<LeafletMap | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    null,
-  );
+  const [selectedLocation, setSelectedLocation] = useState<any | null>(null);
 
   const [locations, setLocations] = useState<any[] | null>([
     {
@@ -171,8 +169,6 @@ export default function MapPage() {
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-              o
-              g
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
 
@@ -191,8 +187,8 @@ export default function MapPage() {
                 //     }),
                 // }}
                 eventHandlers={{
-                    click: () => handleMarkerClick(location),
-                  }}
+                  click: () => handleMarkerClick(location),
+                }}
               />
             ))}
           </MapContainer>
