@@ -10,7 +10,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const { data } = await req.json();
 
     // Construct the message for the chat model
-    const message = `I am sharing metadata for a corresponding image from the year ${data.year}, with the following caption: "${data.title}". Give me a nice little story about it. (It can be completely made up.) Make it entertaining for the user. Keep it short and sweet. This is in Toronto`;
+    const message = `I am sharing metadata for a corresponding image from the year ${data.year}, with the following caption: "${data.title}". Give me a nice little story about it. (It can be completely made up.) Make it entertaining for the user. Keep it short and sweet. This is in Toronto. give me a response that i can directly read to the user. don't say "sure here is this" or "here is that" just give me the response.`;
 
     // Send a request to Cohere's chat model
     const response = await client.chat({
