@@ -28,7 +28,7 @@ export default function PeoplePage() {
       slider.style.transform = `${initialTransform} translateY(${zOffset}px)`;
     }
   };
-
+1
   const handleMouseOver = (e: any) => {
     e.currentTarget.style.left = "15%";
   };
@@ -70,9 +70,10 @@ export default function PeoplePage() {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-white">
-      <header className="p-4 bg-gray-100">
-        <h1 className="text-2xl font-bold">Meet the People of {capitalizeWords(location!)}</h1>
+    <div className="w-screen flex flex-col">
+      <header className="fixed top-4 left-4 z-[1000]">
+        {/* <h1 className="text-2xl font-bold">Meet the People of {capitalizeWords(location!)}</h1> */}
+        <h1 className="text-2xl font-bold">Meet the People of Location</h1>
       </header>
 
       {/* Slider Section */}
@@ -89,7 +90,7 @@ export default function PeoplePage() {
         ))}
       </div>
 
-      <div className="absolute bottom-4 left-4 z-[1001]">
+      <div className="fixed bottom-4 left-4 z-[1001]">
         <button
           onClick={handleNavigateToMap}
           className="bg-[#F2F0E1] text-black text-sm px-4 py-1 rounded-full font-apple-garamond uppercase hover:bg-[#e6e4d5] transition-colors duration-200"
