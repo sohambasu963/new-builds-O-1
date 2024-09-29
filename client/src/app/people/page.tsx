@@ -116,7 +116,8 @@ export default function PeoplePage() {
   return (
     <div className="w-screen flex flex-col">
     <header className="fixed top-4 left-4 z-[1000]">
-      <h1 className="text-2xl font-bold text-gray-300">Meet the People of {capitalizeWords(location!)}</h1>
+      <h1 className="text-[40px] text-[#F2F0E1] font-apple-garamond">
+        Meet the People of {capitalizeWords(location!)}</h1>
     </header>
 
     {/* Slider Section */}
